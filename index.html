@@ -2,12 +2,14 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>北海道&東京之旅</title>
+    <title>2025北海道之旅</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗾</text></svg>">
+    
     <style>
-        /* CSS 樣式：讓網頁看起來像 App */
+        /* --- 核心樣式：仿 iOS 原生 App 設計 --- */
         :root {
             --primary: #007AFF;
             --bg: #F2F2F7;
@@ -15,21 +17,25 @@
             --text: #000000;
             --danger: #FF3B30;
             --success: #34C759;
-            --warning: #FF9500;
+            --subtext: #8E8E93;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
             margin: 0;
             padding: 0;
-            padding-bottom: 80px; /* 避開底部導航 */
+            padding-bottom: 90px; /* 避開底部導航 */
             -webkit-tap-highlight-color: transparent;
+            color: var(--text);
         }
+        
+        /* 頂部導航 */
         header {
-            background-color: var(--card-bg);
-            padding: 15px 20px;
-            padding-top: max(15px, env(safe-area-inset-top));
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 12px 20px;
+            padding-top: max(12px, env(safe-area-inset-top));
+            border-bottom: 1px solid rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -37,156 +43,196 @@
             justify-content: space-between;
             align-items: center;
         }
-        h1 { margin: 0; font-size: 20px; font-weight: 700; }
-        
-        /* 頁面切換 */
-        .view { display: none; padding: 15px; animation: fadeIn 0.3s; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { margin: 0; font-size: 18px; font-weight: 600; }
+        .rate-badge {
+            font-size: 12px; background: #E5E5EA; padding: 4px 8px; 
+            border-radius: 12px; color: var(--text); font-weight: 500;
+        }
 
-        /* 卡片設計 */
+        /* 頁面切換動畫 */
+        .view { display: none; padding: 20px 16px; animation: fadeIn 0.2s ease-out; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 卡片元件 */
         .card {
             background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         }
-        .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .day-date { font-weight: bold; font-size: 18px; color: var(--primary); }
-        .day-title { font-size: 16px; font-weight: 600; margin-bottom: 5px; }
-        .info-row { display: flex; margin-top: 5px; font-size: 14px; color: #666; }
-        .info-icon { margin-right: 6px; width: 20px; text-align: center; }
-
-        /* 記帳表單 */
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; color: #555; }
+        
+        /* 行程樣式 */
+        .day-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+        .day-date { font-weight: 700; font-size: 20px; color: var(--primary); }
+        .day-week { font-size: 14px; color: var(--subtext); font-weight: 600; }
+        .day-title { font-size: 17px; font-weight: 600; margin-bottom: 8px; line-height: 1.4; }
+        .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .tag { font-size: 12px; padding: 4px 8px; border-radius: 6px; background: #F2F2F7; color: #666; display: flex; align-items: center; }
+        
+        /* 表單樣式 */
+        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; color: var(--subtext); margin-left: 4px; }
+        .input-group { background: #fff; border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
         input, select {
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px;
-            font-size: 16px; background: #fff; box-sizing: border-box;
+            width: 100%; padding: 14px; border: none; font-size: 17px; background: #fff;
+            box-sizing: border-box; outline: none; -webkit-appearance: none;
         }
+        .row-inputs { display: flex; gap: 1px; background: #E5E5EA; } /* 模擬分隔線 */
+        .row-inputs > div { flex: 1; background: #fff; }
+
+        /* 按鈕 */
         .btn {
-            background: var(--primary); color: white; border: none; padding: 14px;
-            width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold;
-            cursor: pointer; text-align: center;
+            background: var(--primary); color: white; border: none; padding: 16px;
+            width: 100%; border-radius: 14px; font-size: 17px; font-weight: 600;
+            cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,122,255,0.3);
+            transition: transform 0.1s;
         }
-        .btn-danger { background: var(--danger); }
-        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn:active { transform: scale(0.98); }
+        .btn-del { background: transparent; color: var(--subtext); font-size: 20px; padding: 0 10px; }
 
         /* 底部導航 */
         .tab-bar {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid #ccc;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0,0,0,0.1);
             display: flex; justify-content: space-around;
-            padding: 10px 0; padding-bottom: max(10px, env(safe-area-inset-bottom));
+            padding-top: 8px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            z-index: 200;
         }
-        .tab-item { text-align: center; color: #999; font-size: 10px; flex: 1; cursor: pointer; }
+        .tab-item { text-align: center; color: #999; font-size: 10px; flex: 1; cursor: pointer; transition: color 0.2s; }
         .tab-item.active { color: var(--primary); }
-        .tab-icon { font-size: 24px; display: block; margin-bottom: 2px; }
+        .tab-icon { font-size: 24px; display: block; margin-bottom: 3px; }
 
         /* 購物清單 */
-        .shop-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .shop-item input[type="checkbox"] { width: 24px; height: 24px; margin-right: 10px; }
-        .checked { text-decoration: line-through; color: #aaa; }
+        .shop-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #F2F2F7; }
+        .shop-item:last-child { border-bottom: none; }
+        .shop-item input[type="checkbox"] { width: 22px; height: 22px; margin-right: 12px; border-radius: 6px; }
+        .checked-text { text-decoration: line-through; color: #C7C7CC; }
 
-        /* 統計 */
-        .stat-box { text-align: center; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; }
-        .big-number { font-size: 32px; font-weight: bold; color: var(--text); }
-        .sub-text { font-size: 14px; color: #666; }
+        /* 提示框與數據 */
+        .tip-box { 
+            background: #FFF8E1; color: #B08800; padding: 12px; border-radius: 10px; 
+            font-size: 14px; margin-bottom: 16px; display: none; border-left: 4px solid #FFC107;
+        }
+        .stat-card { text-align: center; padding: 24px; background: linear-gradient(135deg, #007AFF, #00C7BE); color: white; }
+        .stat-val { font-size: 36px; font-weight: 700; margin: 5px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-label { font-size: 14px; opacity: 0.9; }
 
-        /* 提示框 */
-        .tip-box { background: #fff3cd; color: #856404; padding: 10px; border-radius: 8px; font-size: 13px; margin-top: 5px; display: none; }
+        /* 列表項目 */
+        .exp-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F2F2F7; }
+        .exp-name { font-weight: 600; font-size: 16px; }
+        .exp-meta { font-size: 12px; color: var(--subtext); margin-top: 2px; }
+        .exp-amt { font-weight: 700; font-size: 16px; color: var(--text); }
+        .exp-orig { font-size: 12px; color: var(--subtext); text-align: right; }
     </style>
 </head>
 <body>
 
 <header>
     <h1 id="page-title">📅 行程總覽</h1>
-    <div style="font-size:12px; color:#666;" id="rate-display">匯率: 0.22</div>
+    <div class="rate-badge" id="rate-display">匯率 0.22</div>
 </header>
 
 <div id="view-itinerary" class="view active">
     <div id="itinerary-list"></div>
+    <div style="height: 40px;"></div>
 </div>
 
 <div id="view-wallet" class="view">
     <div class="card">
-        <h3>💸 新增支出</h3>
-        <div class="form-group">
-            <label>消費項目</label>
-            <input type="text" id="expense-name" placeholder="例如：一幻拉麵">
+        <label>消費項目</label>
+        <div class="input-group">
+            <input type="text" id="expense-name" placeholder="例如：一幻拉麵、白色戀人">
         </div>
-        <div class="form-group" style="display:flex; gap:10px;">
-            <div style="flex:1;">
-                <label>金額</label>
-                <input type="number" id="expense-amount" placeholder="0">
-            </div>
-            <div style="width: 80px;">
-                <label>幣別</label>
-                <select id="expense-currency" onchange="calcPreview()">
-                    <option value="JPY">JPY</option>
-                    <option value="TWD">TWD</option>
+
+        <label>金額與幣別</label>
+        <div class="input-group row-inputs">
+            <div style="flex:2"><input type="number" id="expense-amount" placeholder="金額" inputmode="decimal"></div>
+            <div style="flex:1">
+                <select id="expense-currency" onchange="calcPreview()" style="height:100%;">
+                    <option value="JPY">JPY 日幣</option>
+                    <option value="TWD">TWD 台幣</option>
                 </select>
             </div>
         </div>
-        <div class="form-group">
-            <label>支付方式</label>
+
+        <label>支付方式</label>
+        <div class="input-group">
             <select id="expense-method" onchange="showCardTip()">
                 <option value="現金">💰 現金 (JPY)</option>
-                <option value="西瓜卡">🐧 西瓜卡/ICOCA</option>
+                <option value="西瓜卡">🐧 西瓜卡 / ICOCA</option>
                 <option value="ApplePay">🍎 Apple Pay</option>
-                <option value="中信ANA">💳 中信 ANA 聯名卡</option>
-                <option value="玉山世界">💳 玉山世界卡</option>
-                <option value="國泰CUBE">💳 國泰 CUBE 卡</option>
+                <option value="中信ANA">💳 中信 ANA (哩程)</option>
+                <option value="玉山世界">💳 玉山世界卡 (頂級)</option>
+                <option value="國泰CUBE">💳 國泰 CUBE (權益)</option>
             </select>
-            <div id="card-tip" class="tip-box"></div>
         </div>
-        <div class="form-group">
-            <div style="text-align:right; font-size:14px; color:#666;">
-                約合台幣：<span id="twd-preview" style="font-weight:bold; color:var(--primary);">$0</span>
-            </div>
+
+        <div id="card-tip" class="tip-box"></div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding:0 5px;">
+            <span style="font-size:13px; color:#888;">折合台幣試算</span>
+            <span id="twd-preview" style="font-weight:700; color:var(--primary); font-size:18px;">$0</span>
         </div>
-        <button class="btn" onclick="addExpense()">記下一筆</button>
+
+        <button class="btn" onclick="addExpense()">記帳</button>
+    </div>
+
+    <div class="card stat-card">
+        <div class="stat-label">目前總花費 (TWD)</div>
+        <div class="stat-val" id="total-spent">$0</div>
     </div>
 
     <div class="card">
-        <h3>📊 消費紀錄</h3>
+        <h3 style="margin-top:0; font-size:16px;">📜 消費明細</h3>
         <div id="expense-list"></div>
-        <div style="margin-top:10px; border-top:1px solid #eee; padding-top:10px;">
-            <strong>總支出 (TWD): </strong> <span id="total-spent" style="color:var(--danger);">$0</span>
-        </div>
     </div>
 </div>
 
 <div id="view-shopping" class="view">
     <div class="card">
         <div style="display:flex; gap:10px;">
-            <input type="text" id="shop-input" placeholder="想買什麼？">
-            <button class="btn" style="width:auto;" onclick="addShopItem()">➕</button>
+            <input type="text" id="shop-input" placeholder="新增待買物品..." style="background:#F2F2F7; border-radius:10px; padding:12px;">
+            <button class="btn" style="width:auto; padding:0 20px;" onclick="addShopItem()">＋</button>
         </div>
     </div>
     <div class="card">
-        <h3>🛒 待買清單</h3>
+        <h3 style="margin-top:0; font-size:16px;">🛒 待買清單</h3>
         <div id="shopping-list"></div>
     </div>
 </div>
 
 <div id="view-settings" class="view">
     <div class="card">
-        <h3>⚙️ 設定</h3>
-        <div class="form-group">
-            <label>目前日幣匯率</label>
+        <h3 style="margin-top:0">⚙️ 匯率設定</h3>
+        <label>目前日幣匯率</label>
+        <div class="input-group">
             <input type="number" id="setting-rate" value="0.22" step="0.001" onchange="updateRate()">
         </div>
-        <button class="btn btn-danger" onclick="clearData()">⚠️ 清除所有資料</button>
+        <p style="font-size:12px; color:#888;">修改後，所有歷史日幣消費的台幣總額會自動重算。</p>
     </div>
+
     <div class="card">
-        <h3>ℹ️ 您的卡片攻略</h3>
-        <p><strong>💳 中信 ANA：</strong>刷機票、海外實體消費 (累積哩程)</p>
-        <p><strong>💳 玉山世界：</strong>刷大額飯店住宿 (頂級卡權益)</p>
-        <p><strong>💳 國泰 CUBE：</strong>吃喝玩樂，記得切換「日本賞」(3%回饋)</p>
+        <h3 style="margin-top:0">💳 卡片攻略備忘</h3>
+        <div style="margin-bottom:10px;">
+            <strong>中信 ANA 聯名卡</strong>
+            <div style="font-size:13px; color:#666;">購買機票、海外實體店面消費。累積哩程專用。</div>
+        </div>
+        <div style="margin-bottom:10px;">
+            <strong>玉山世界卡</strong>
+            <div style="font-size:13px; color:#666;">高額飯店住宿、百貨精品。注意免年費門檻。</div>
+        </div>
+        <div style="margin-bottom:10px;">
+            <strong>國泰 CUBE 卡</strong>
+            <div style="font-size:13px; color:#666;">一般吃喝玩樂。<b>⚠️ 務必切換至「日本賞」</b>享 3% 回饋。</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <button class="btn" style="background:var(--danger);" onclick="clearData()">清除所有資料</button>
     </div>
 </div>
 
@@ -206,193 +252,200 @@
 </div>
 
 <script>
-    // --- 1. 資料庫 (從您的圖片與需求整理) ---
-    const itineraryData = [
-        { date: "8/13", w: "三", title: "出發：台北 ✈️ 札幌", trans: "長榮航空 (哩程票)", stay: "札幌東橫北口 (現場付)", note: "10:10 TPE -> 15:00 CTS" },
-        { date: "8/14", w: "四", title: "移動：札幌 ✈️ 稚內", trans: "ANA 國內線", stay: "稚內 ANA (樂天刷卡)", note: "北大或北廣島Outlet" },
-        { date: "8/15", w: "五", title: "利尻島一日遊", trans: "渡輪+巴士", stay: "Dormy Inn (已付)", note: "KLOOK: 3936元" },
-        { date: "8/16", w: "六", title: "稚內一日遊", trans: "渡輪+巴士", stay: "Dormy Inn (已付)", note: "KLOOK: 3924元 (含早)" },
-        { date: "8/17", w: "日", title: "大移動：稚內 🚆 札幌", trans: "JR特急宗谷", stay: "札幌東急REI (JALAN)", note: "13:00稚內 -> 20:00札幌" },
-        { date: "8/18", w: "一", title: "札幌市區觀光", trans: "市電一日券", stay: "札幌東急REI (JALAN)", note: "白色戀人、中島公園、一幻拉麵" },
-        { date: "8/19", w: "二", title: "札幌漫遊", trans: "JR", stay: "札幌東急REI (JALAN)", note: "早餐海膽飯、北海道神宮" },
-        { date: "8/20", w: "三", title: "移動：札幌 ✈️ 東京", trans: "ANA 國內線", stay: "東武淺草站前 (JALAN)", note: "12:30 CTS -> 14:10 HND" },
-        { date: "8/21", w: "四", title: "日光 2日遊 (Day1)", trans: "東武日光票(1063元)", stay: "日光 星之宿 (樂天)", note: "" },
-        { date: "8/22", w: "五", title: "日光 2日遊 (Day2)", trans: "東武日光票(397元)", stay: "東京車站東橫 (官網)", note: "回東京" },
-        { date: "8/23", w: "六", title: "東京市區一日遊", trans: "地鐵/JR", stay: "東京車站東橫 (JALAN)", note: "" },
-        { date: "8/24", w: "日", title: "返家：成田 ✈️ 高雄", trans: "華航", stay: "溫暖的家", note: "金子半之助, 12:40 NRT -> 15:05 KHH" }
+    // --- 資料初始化 ---
+    const ITINERARY = [
+        { d: "8/13", w: "三", t: "出發：台北 ✈️ 札幌", tr: "長榮航空 (哩程票)", h: "札幌東橫北口", n: "10:10 TPE → 15:00 CTS" },
+        { d: "8/14", w: "四", t: "移動：札幌 ✈️ 稚內", tr: "ANA 國內線", h: "稚內 ANA", n: "15:35 CTS → 16:35 WKJ" },
+        { d: "8/15", w: "五", t: "利尻島一日遊", tr: "渡輪 + 巴士", h: "Dormy Inn", n: "KLOOK: 3936元 (已付)" },
+        { d: "8/16", w: "六", t: "稚內一日遊", tr: "渡輪 + 巴士", h: "Dormy Inn", n: "KLOOK: 3924元 (已付)" },
+        { d: "8/17", w: "日", t: "大移動：稚內 🚆 札幌", tr: "JR 特急宗谷", h: "札幌東急REI", n: "13:00 稚內 → 17:00 旭川 → 20:00 札幌" },
+        { d: "8/18", w: "一", t: "札幌市區觀光", tr: "市電一日券", h: "札幌東急REI", n: "白色戀人、中島公園、一幻拉麵" },
+        { d: "8/19", w: "二", t: "札幌漫遊", tr: "JR", h: "札幌東急REI", n: "早餐海膽飯、北海道神宮" },
+        { d: "8/20", w: "三", t: "移動：札幌 ✈️ 東京", tr: "ANA 國內線", h: "東武淺草站前", n: "12:30 CTS → 14:10 HND" },
+        { d: "8/21", w: "四", t: "日光 2日遊 (Day1)", tr: "東武日光票", h: "日光 星之宿", n: "訂房網：樂天" },
+        { d: "8/22", w: "五", t: "日光 2日遊 (Day2)", tr: "東武日光票", h: "東京車站東橫", n: "回東京市區" },
+        { d: "8/23", w: "六", t: "東京市區一日遊", tr: "地鐵 / JR", h: "東京車站東橫", n: "隨意逛逛" },
+        { d: "8/24", w: "日", t: "返家：成田 ✈️ 高雄", tr: "華航 CI103", h: "溫暖的家", n: "12:40 NRT → 15:05 KHH" }
     ];
 
-    // 全域變數
-    let expenses = JSON.parse(localStorage.getItem('myTripExpenses')) || [];
-    let shopList = JSON.parse(localStorage.getItem('myTripShopList')) || [];
-    let exchangeRate = parseFloat(localStorage.getItem('myTripRate')) || 0.22;
+    // LocalStorage Keys
+    const LS_KEY_EXP = 'hkd25_expenses';
+    const LS_KEY_SHOP = 'hkd25_shop';
+    const LS_KEY_RATE = 'hkd25_rate';
 
-    // --- 2. 初始化 ---
+    let expenses = JSON.parse(localStorage.getItem(LS_KEY_EXP)) || [];
+    let shopList = JSON.parse(localStorage.getItem(LS_KEY_SHOP)) || [];
+    let exchangeRate = parseFloat(localStorage.getItem(LS_KEY_RATE)) || 0.22;
+
+    // --- 程式進入點 ---
     document.addEventListener('DOMContentLoaded', () => {
         renderItinerary();
         renderExpenses();
         renderShopList();
         document.getElementById('setting-rate').value = exchangeRate;
         updateRateDisplay();
+        
+        // 監聽輸入框自動試算
+        document.getElementById('expense-amount').addEventListener('input', calcPreview);
     });
 
-    // --- 3. 頁面切換邏輯 ---
-    function switchTab(viewId, element) {
-        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+    // --- 核心功能 ---
+    function switchTab(viewId, el) {
+        document.querySelectorAll('.view').forEach(d => d.classList.remove('active'));
         document.getElementById('view-' + viewId).classList.add('active');
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
         
-        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-
-        const titles = { 'itinerary': '📅 行程總覽', 'wallet': '💰 旅遊記帳', 'shopping': '🛒 購物清單', 'settings': '⚙️ 設定' };
+        const titles = {'itinerary':'📅 行程總覽', 'wallet':'💰 旅遊記帳', 'shopping':'🛒 購物清單', 'settings':'⚙️ 設定'};
         document.getElementById('page-title').innerText = titles[viewId];
+        window.scrollTo(0,0);
     }
 
-    // --- 4. 行程功能 ---
     function renderItinerary() {
-        const container = document.getElementById('itinerary-list');
-        container.innerHTML = itineraryData.map(item => `
+        const list = document.getElementById('itinerary-list');
+        list.innerHTML = ITINERARY.map(item => `
             <div class="card">
                 <div class="day-header">
-                    <span class="day-date">${item.date} (${item.w})</span>
+                    <span class="day-date">${item.d}</span>
+                    <span class="day-week">${item.w}</span>
                 </div>
-                <div class="day-title">${item.title}</div>
-                <div class="info-row"><span class="info-icon">🚆</span> ${item.trans}</div>
-                <div class="info-row"><span class="info-icon">🏨</span> ${item.stay}</div>
-                ${item.note ? `<div class="info-row" style="color:#888; font-style:italic;"><span class="info-icon">📝</span> ${item.note}</div>` : ''}
+                <div class="day-title">${item.t}</div>
+                <div class="tag-row">
+                    <div class="tag">🚆 ${item.tr}</div>
+                    <div class="tag">🏨 ${item.h}</div>
+                </div>
+                ${item.n ? `<div style="margin-top:8px; font-size:13px; color:#888;">📝 ${item.n}</div>` : ''}
             </div>
         `).join('');
-    }
-
-    // --- 5. 記帳功能 ---
-    function updateRate() {
-        exchangeRate = parseFloat(document.getElementById('setting-rate').value);
-        localStorage.setItem('myTripRate', exchangeRate);
-        updateRateDisplay();
-        calcPreview();
-        renderExpenses(); // 重算總額
-    }
-
-    function updateRateDisplay() {
-        document.getElementById('rate-display').innerText = `匯率: ${exchangeRate}`;
     }
 
     function calcPreview() {
         const amt = parseFloat(document.getElementById('expense-amount').value) || 0;
         const curr = document.getElementById('expense-currency').value;
-        const total = (curr === 'JPY') ? Math.round(amt * exchangeRate) : amt;
-        document.getElementById('twd-preview').innerText = `$${total}`;
+        const twd = (curr === 'JPY') ? Math.round(amt * exchangeRate) : amt;
+        document.getElementById('twd-preview').innerText = `$${twd.toLocaleString()}`;
     }
 
-    // 卡片提示邏輯 (關鍵！)
     function showCardTip() {
-        const method = document.getElementById('expense-method').value;
-        const tipBox = document.getElementById('card-tip');
-        let tipText = "";
-
-        if(method === "中信ANA") tipText = "✈️ 記得刷這張累積哩程！";
-        else if(method === "玉山世界") tipText = "👑 大額消費建議用此卡";
-        else if(method === "國泰CUBE") tipText = "⚠️ 請切換權益至「日本賞」(3%)";
-        else if(method === "西瓜卡") tipText = "🐧 記得要記一筆「儲值」喔";
-
-        if(tipText) {
-            tipBox.style.display = 'block';
-            tipBox.innerText = tipText;
-        } else {
-            tipBox.style.display = 'none';
-        }
+        const m = document.getElementById('expense-method').value;
+        const tip = document.getElementById('card-tip');
+        let txt = '';
+        
+        if (m.includes('中信')) txt = '✈️ 記得確認是否累積哩程！';
+        else if (m.includes('玉山')) txt = '👑 大額消費專用，確認額度。';
+        else if (m.includes('國泰')) txt = '⚠️ 請打開 App 切換至「日本賞」(3%)';
+        else if (m.includes('西瓜')) txt = '🐧 餘額變動，建議記一筆「儲值」來追蹤。';
+        
+        tip.style.display = txt ? 'block' : 'none';
+        tip.innerText = txt;
     }
 
     function addExpense() {
-        const name = document.getElementById('expense-name').value;
-        const amount = parseFloat(document.getElementById('expense-amount').value);
-        const currency = document.getElementById('expense-currency').value;
+        const name = document.getElementById('expense-name').value.trim();
+        const amt = parseFloat(document.getElementById('expense-amount').value);
+        const curr = document.getElementById('expense-currency').value;
         const method = document.getElementById('expense-method').value;
 
-        if(!name || !amount) { alert('請輸入項目和金額'); return; }
+        if (!name || isNaN(amt)) { alert('請輸入項目名稱與金額'); return; }
 
-        const twd = (currency === 'JPY') ? Math.round(amount * exchangeRate) : amount;
-
-        const newExp = {
+        expenses.unshift({
             id: Date.now(),
             date: new Date().toLocaleDateString(),
-            name, amount, currency, method, twd
-        };
-
-        expenses.unshift(newExp);
-        localStorage.setItem('myTripExpenses', JSON.stringify(expenses));
+            name, amt, curr, method
+        });
+        saveExp();
         
-        // 重置表單
+        // Reset
         document.getElementById('expense-name').value = '';
         document.getElementById('expense-amount').value = '';
-        renderExpenses();
-        alert('記帳成功！');
+        calcPreview();
+        alert('✅ 記帳完成');
     }
 
     function renderExpenses() {
         const list = document.getElementById('expense-list');
-        let totalTWD = 0;
-
-        list.innerHTML = expenses.map(exp => {
-            totalTWD += exp.twd;
-            return `
-                <div style="border-bottom:1px solid #eee; padding:10px 0; display:flex; justify-content:space-between;">
-                    <div>
-                        <div style="font-weight:600;">${exp.name}</div>
-                        <div style="font-size:12px; color:#888;">${exp.method} | ${exp.date}</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="color:var(--primary); font-weight:bold;">$${exp.twd}</div>
-                        <div style="font-size:12px; color:#aaa;">${exp.amount} ${exp.currency}</div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        document.getElementById('total-spent').innerText = `$${totalTWD.toLocaleString()}`;
-    }
-
-    // --- 6. 購物清單功能 ---
-    function addShopItem() {
-        const input = document.getElementById('shop-input');
-        if(!input.value) return;
+        let total = 0;
         
-        shopList.push({ txt: input.value, done: false });
-        saveShop();
-        input.value = '';
-        renderShopList();
+        list.innerHTML = expenses.map(e => {
+            const isJpy = e.curr === 'JPY';
+            const twdVal = isJpy ? Math.round(e.amt * exchangeRate) : e.amt;
+            total += twdVal;
+            
+            return `
+            <div class="exp-item">
+                <div>
+                    <div class="exp-name">${e.name}</div>
+                    <div class="exp-meta">${e.method} · ${e.date}</div>
+                </div>
+                <div>
+                    <div class="exp-amt">$${twdVal.toLocaleString()}</div>
+                    ${isJpy ? `<div class="exp-orig">¥${e.amt.toLocaleString()}</div>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+        
+        document.getElementById('total-spent').innerText = `$${total.toLocaleString()}`;
     }
 
-    function toggleShop(index) {
-        shopList[index].done = !shopList[index].done;
+    function saveExp() {
+        localStorage.setItem(LS_KEY_EXP, JSON.stringify(expenses));
+        renderExpenses();
+    }
+
+    // 購物車
+    function addShopItem() {
+        const v = document.getElementById('shop-input').value.trim();
+        if(!v) return;
+        shopList.push({ t: v, d: false });
         saveShop();
-        renderShopList();
+        document.getElementById('shop-input').value = '';
+    }
+
+    function toggleShop(i) {
+        shopList[i].d = !shopList[i].d;
+        saveShop();
+    }
+
+    function delShop(i) {
+        shopList.splice(i, 1);
+        saveShop();
     }
 
     function saveShop() {
-        localStorage.setItem('myTripShopList', JSON.stringify(shopList));
+        localStorage.setItem(LS_KEY_SHOP, JSON.stringify(shopList));
+        renderShopList();
     }
 
     function renderShopList() {
-        const container = document.getElementById('shopping-list');
-        container.innerHTML = shopList.map((item, idx) => `
+        const list = document.getElementById('shopping-list');
+        if(shopList.length === 0) { list.innerHTML = '<div style="color:#aaa; text-align:center; padding:20px;">清單是空的</div>'; return; }
+        
+        list.innerHTML = shopList.map((item, i) => `
             <div class="shop-item">
-                <input type="checkbox" ${item.done ? 'checked' : ''} onclick="toggleShop(${idx})">
-                <span class="${item.done ? 'checked' : ''}">${item.txt}</span>
-                <button onclick="deleteShop(${idx})" style="margin-left:auto; background:none; border:none; color:#ccc;">✕</button>
+                <input type="checkbox" ${item.d ? 'checked' : ''} onclick="toggleShop(${i})">
+                <span style="flex:1" class="${item.d ? 'checked-text' : ''}">${item.t}</span>
+                <button class="btn-del" onclick="delShop(${i})">×</button>
             </div>
         `).join('');
     }
 
-    function deleteShop(index) {
-        shopList.splice(index, 1);
-        saveShop();
-        renderShopList();
+    // 設定
+    function updateRate() {
+        exchangeRate = parseFloat(document.getElementById('setting-rate').value);
+        localStorage.setItem(LS_KEY_RATE, exchangeRate);
+        updateRateDisplay();
+        renderExpenses(); // 重算歷史金額
+        calcPreview();
+    }
+
+    function updateRateDisplay() {
+        document.getElementById('rate-display').innerText = `匯率 ${exchangeRate}`;
     }
 
     function clearData() {
-        if(confirm("確定要刪除所有記帳和購物資料嗎？")) {
-            localStorage.clear();
+        if(confirm('確定要刪除所有資料嗎？無法復原喔！')) {
+            localStorage.removeItem(LS_KEY_EXP);
+            localStorage.removeItem(LS_KEY_SHOP);
             location.reload();
         }
     }
