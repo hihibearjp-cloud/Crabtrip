@@ -2,316 +2,401 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>2026 關西螃蟹橫著走</title>
-    
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+    <title>北海道&東京之旅</title>
     <style>
-        /* 全局設定 & Reset */
-        body { 
-            margin: 0; padding: 0; 
-            background-color: #FFF8F0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", "Segoe UI", Roboto, sans-serif; 
-            -webkit-tap-highlight-color: transparent; 
-            padding-bottom: 100px; /* 避開底部導航 */
-            padding-top: env(safe-area-inset-top);
+        /* CSS 樣式：讓網頁看起來像 App */
+        :root {
+            --primary: #007AFF;
+            --bg: #F2F2F7;
+            --card-bg: #FFFFFF;
+            --text: #000000;
+            --danger: #FF3B30;
+            --success: #34C759;
+            --warning: #FF9500;
         }
-        * { box-sizing: border-box; user-select: none; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px; /* 避開底部導航 */
+            -webkit-tap-highlight-color: transparent;
+        }
+        header {
+            background-color: var(--card-bg);
+            padding: 15px 20px;
+            padding-top: max(15px, env(safe-area-inset-top));
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 { margin: 0; font-size: 20px; font-weight: 700; }
         
-        /* 動畫定義 */
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* 頁面切換 */
+        .view { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 隱藏捲軸但保留功能 */
-        ::-webkit-scrollbar { display: none; }
-        
-        /* 按鈕點擊效果 */
-        button:active { transform: scale(0.96); }
+        /* 卡片設計 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .day-date { font-weight: bold; font-size: 18px; color: var(--primary); }
+        .day-title { font-size: 16px; font-weight: 600; margin-bottom: 5px; }
+        .info-row { display: flex; margin-top: 5px; font-size: 14px; color: #666; }
+        .info-icon { margin-right: 6px; width: 20px; text-align: center; }
+
+        /* 記帳表單 */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; color: #555; }
+        input, select {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px;
+            font-size: 16px; background: #fff; box-sizing: border-box;
+        }
+        .btn {
+            background: var(--primary); color: white; border: none; padding: 14px;
+            width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold;
+            cursor: pointer; text-align: center;
+        }
+        .btn-danger { background: var(--danger); }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+
+        /* 底部導航 */
+        .tab-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #ccc;
+            display: flex; justify-content: space-around;
+            padding: 10px 0; padding-bottom: max(10px, env(safe-area-inset-bottom));
+        }
+        .tab-item { text-align: center; color: #999; font-size: 10px; flex: 1; cursor: pointer; }
+        .tab-item.active { color: var(--primary); }
+        .tab-icon { font-size: 24px; display: block; margin-bottom: 2px; }
+
+        /* 購物清單 */
+        .shop-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .shop-item input[type="checkbox"] { width: 24px; height: 24px; margin-right: 10px; }
+        .checked { text-decoration: line-through; color: #aaa; }
+
+        /* 統計 */
+        .stat-box { text-align: center; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; }
+        .big-number { font-size: 32px; font-weight: bold; color: var(--text); }
+        .sub-text { font-size: 14px; color: #666; }
+
+        /* 提示框 */
+        .tip-box { background: #fff3cd; color: #856404; padding: 10px; border-radius: 8px; font-size: 13px; margin-top: 5px; display: none; }
     </style>
 </head>
 <body>
 
-<div id="root"></div>
+<header>
+    <h1 id="page-title">📅 行程總覽</h1>
+    <div style="font-size:12px; color:#666;" id="rate-display">匯率: 0.22</div>
+</header>
 
-<script type="text/babel">
-const { useState, useEffect } = React;
+<div id="view-itinerary" class="view active">
+    <div id="itinerary-list"></div>
+</div>
 
-// --- 🎨 工具：類別顏色 ---
-const getTypeColor = (type) => {
-    switch(type) {
-        case '住宿': return { bg: '#E0F2FE', text: '#0369A1' }; // 藍
-        case '飲食': return { bg: '#FEF3C7', text: '#B45309' }; // 黃
-        case '娛樂': return { bg: '#FCE7F3', text: '#BE185D' }; // 粉
-        case '購物': return { bg: '#DCFCE7', text: '#15803D' }; // 綠
-        case '交通': return { bg: '#F3F4F6', text: '#4B5563' }; // 灰
-        default: return { bg: '#F3F4F6', text: '#666' };
-    }
-};
-
-// --- ✨ 組件：智慧匯入視窗 ---
-const SmartImporter = ({ onClose, onAdd }) => {
-    const [mode, setMode] = useState('photo'); 
-    const [status, setStatus] = useState('idle'); // idle, analyzing, review
-    const [result, setResult] = useState(null);
-
-    const startAnalysis = () => {
-        setStatus('analyzing');
-        // 模擬 AI 分析延遲
-        setTimeout(() => {
-            setResult({
-                title: mode === 'photo' ? "清水寺夜間參拜" : "神戶 Mouriya 牛排",
-                location: mode === 'photo' ? "京都清水寺" : "神戶三宮",
-                type: mode === 'photo' ? "娛樂" : "飲食",
-                cost: mode === 'photo' ? 400 : 12000,
-                date: "2/4",
-                note: "AI 自動擷取：建議提前預約"
-            });
-            setStatus('review');
-        }, 1500);
-    };
-
-    const s = {
-        overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 2000, display: 'flex', alignItems: 'flex-end', backdropFilter: 'blur(3px)' },
-        sheet: { background: 'white', width: '100%', borderRadius: '24px 24px 0 0', padding: '24px', animation: 'slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', minHeight: '60vh', display: 'flex', flexDirection: 'column', paddingBottom: '40px' },
-        tabs: { display: 'flex', background: '#F2F2F7', padding: '4px', borderRadius: '12px', marginBottom: '20px' },
-        tab: (isActive) => ({ flex: 1, padding: '10px', textAlign: 'center', borderRadius: '10px', background: isActive ? 'white' : 'transparent', fontWeight: isActive ? 'bold' : 'normal', boxShadow: isActive ? '0 2px 4px rgba(0,0,0,0.1)' : 'none', transition: '0.2s', cursor:'pointer' }),
-        uploadBox: { border: '2px dashed #FF9A9E', background: '#FFF0F0', borderRadius: '16px', height: '150px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#FF6B6B', marginBottom: '20px', cursor:'pointer' },
-        btn: { width: '100%', padding: '16px', borderRadius: '30px', background: '#333', color: '#F4B942', border: 'none', fontSize: '16px', fontWeight: 'bold', marginTop: 'auto', cursor:'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' },
-        input: { width: '100%', padding: '12px', borderRadius: '12px', background: '#F9F9F9', border: '1px solid #EEE', marginBottom: '12px', fontSize: '16px', outline: 'none' }
-    };
-
-    return (
-        <div style={s.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
-            <div style={s.sheet}>
-                <div style={{display:'flex', justifyContent:'space-between', marginBottom:'20px'}}>
-                    <h2 style={{margin:0, fontSize:'20px'}}>✨ 智慧匯入</h2>
-                    <button onClick={onClose} style={{background:'none', border:'none', fontSize:'24px', color:'#999', cursor:'pointer'}}>×</button>
-                </div>
-
-                {status === 'idle' && (
-                    <>
-                        <div style={s.tabs}>
-                            <div style={s.tab(mode==='photo')} onClick={()=>setMode('photo')}>📸 拍照片</div>
-                            <div style={s.tab(mode==='text')} onClick={()=>setMode('text')}>📝 貼文字</div>
-                        </div>
-
-                        {mode === 'photo' ? (
-                            <div style={s.uploadBox} onClick={startAnalysis}>
-                                <div style={{fontSize:'48px'}}>📷</div>
-                                <div style={{marginTop:'8px', fontWeight:'bold'}}>點擊上傳截圖 / 照片</div>
-                            </div>
-                        ) : (
-                            <textarea style={{...s.input, height:'120px', resize:'none'}} placeholder="請貼上行程文字..." />
-                        )}
-
-                        <button style={s.btn} onClick={startAnalysis}>開始 AI 分析</button>
-                    </>
-                )}
-
-                {status === 'analyzing' && (
-                    <div style={{flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
-                        <div style={{fontSize:'60px', animation:'pulse 1s infinite'}}>🔮</div>
-                        <h3 style={{marginTop:'20px', color:'#333'}}>正在分析行程...</h3>
-                        <p style={{color:'#888'}}>擷取時間、地點與金額中</p>
-                    </div>
-                )}
-
-                {status === 'review' && result && (
-                    <>
-                        <div style={{marginBottom:'10px', color:'#888', fontSize:'14px'}}>請確認辨識結果：</div>
-                        <div style={{flex:1, overflowY:'auto', paddingBottom:'20px'}}>
-                            <input value={result.title} onChange={e=>setResult({...result, title:e.target.value})} style={s.input} placeholder="標題" />
-                            <div style={{display:'flex', gap:'10px'}}>
-                                <input value={result.date} onChange={e=>setResult({...result, date:e.target.value})} style={{...s.input, flex:1}} placeholder="日期" />
-                                <input value={result.cost} type="number" onChange={e=>setResult({...result, cost:Number(e.target.value)})} style={{...s.input, flex:1}} placeholder="金額" />
-                            </div>
-                            <input value={result.location} onChange={e=>setResult({...result, location:e.target.value})} style={s.input} placeholder="地點" />
-                            <div style={{fontSize:'12px', background:'#FEF3C7', padding:'10px', borderRadius:'12px', color:'#D97706', lineHeight:'1.4'}}>
-                                💡 {result.note}
-                            </div>
-                        </div>
-                        <button style={s.btn} onClick={() => { onAdd(result); onClose(); }}>確認加入行程 ✅</button>
-                    </>
-                )}
+<div id="view-wallet" class="view">
+    <div class="card">
+        <h3>💸 新增支出</h3>
+        <div class="form-group">
+            <label>消費項目</label>
+            <input type="text" id="expense-name" placeholder="例如：一幻拉麵">
+        </div>
+        <div class="form-group" style="display:flex; gap:10px;">
+            <div style="flex:1;">
+                <label>金額</label>
+                <input type="number" id="expense-amount" placeholder="0">
+            </div>
+            <div style="width: 80px;">
+                <label>幣別</label>
+                <select id="expense-currency" onchange="calcPreview()">
+                    <option value="JPY">JPY</option>
+                    <option value="TWD">TWD</option>
+                </select>
             </div>
         </div>
-    );
-};
+        <div class="form-group">
+            <label>支付方式</label>
+            <select id="expense-method" onchange="showCardTip()">
+                <option value="現金">💰 現金 (JPY)</option>
+                <option value="西瓜卡">🐧 西瓜卡/ICOCA</option>
+                <option value="ApplePay">🍎 Apple Pay</option>
+                <option value="中信ANA">💳 中信 ANA 聯名卡</option>
+                <option value="玉山世界">💳 玉山世界卡</option>
+                <option value="國泰CUBE">💳 國泰 CUBE 卡</option>
+            </select>
+            <div id="card-tip" class="tip-box"></div>
+        </div>
+        <div class="form-group">
+            <div style="text-align:right; font-size:14px; color:#666;">
+                約合台幣：<span id="twd-preview" style="font-weight:bold; color:var(--primary);">$0</span>
+            </div>
+        </div>
+        <button class="btn" onclick="addExpense()">記下一筆</button>
+    </div>
 
-// --- 🏠 主應用程式 ---
-const App = () => {
-    const [showImport, setShowImport] = useState(false);
-    
-    // 💾 初始化 State：優先從 LocalStorage 讀取
-    const [items, setItems] = useState(() => {
-        const savedData = localStorage.getItem("kansai_2026_data");
-        return savedData ? JSON.parse(savedData) : [
-            { id: 1, date: "2/2", title: "大阪 難波", location: "難波八阪神社", type: "住宿", cost: 15000, note: "船上住宿" },
-            { id: 2, date: "2/3", title: "抵達門司港", location: "門司港", type: "住宿", cost: 12000, note: "福岡 Quintessa" },
-        ];
+    <div class="card">
+        <h3>📊 消費紀錄</h3>
+        <div id="expense-list"></div>
+        <div style="margin-top:10px; border-top:1px solid #eee; padding-top:10px;">
+            <strong>總支出 (TWD): </strong> <span id="total-spent" style="color:var(--danger);">$0</span>
+        </div>
+    </div>
+</div>
+
+<div id="view-shopping" class="view">
+    <div class="card">
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="shop-input" placeholder="想買什麼？">
+            <button class="btn" style="width:auto;" onclick="addShopItem()">➕</button>
+        </div>
+    </div>
+    <div class="card">
+        <h3>🛒 待買清單</h3>
+        <div id="shopping-list"></div>
+    </div>
+</div>
+
+<div id="view-settings" class="view">
+    <div class="card">
+        <h3>⚙️ 設定</h3>
+        <div class="form-group">
+            <label>目前日幣匯率</label>
+            <input type="number" id="setting-rate" value="0.22" step="0.001" onchange="updateRate()">
+        </div>
+        <button class="btn btn-danger" onclick="clearData()">⚠️ 清除所有資料</button>
+    </div>
+    <div class="card">
+        <h3>ℹ️ 您的卡片攻略</h3>
+        <p><strong>💳 中信 ANA：</strong>刷機票、海外實體消費 (累積哩程)</p>
+        <p><strong>💳 玉山世界：</strong>刷大額飯店住宿 (頂級卡權益)</p>
+        <p><strong>💳 國泰 CUBE：</strong>吃喝玩樂，記得切換「日本賞」(3%回饋)</p>
+    </div>
+</div>
+
+<div class="tab-bar">
+    <div class="tab-item active" onclick="switchTab('itinerary', this)">
+        <span class="tab-icon">📅</span>行程
+    </div>
+    <div class="tab-item" onclick="switchTab('wallet', this)">
+        <span class="tab-icon">💰</span>記帳
+    </div>
+    <div class="tab-item" onclick="switchTab('shopping', this)">
+        <span class="tab-icon">🛒</span>購物
+    </div>
+    <div class="tab-item" onclick="switchTab('settings', this)">
+        <span class="tab-icon">⚙️</span>設定
+    </div>
+</div>
+
+<script>
+    // --- 1. 資料庫 (從您的圖片與需求整理) ---
+    const itineraryData = [
+        { date: "8/13", w: "三", title: "出發：台北 ✈️ 札幌", trans: "長榮航空 (哩程票)", stay: "札幌東橫北口 (現場付)", note: "10:10 TPE -> 15:00 CTS" },
+        { date: "8/14", w: "四", title: "移動：札幌 ✈️ 稚內", trans: "ANA 國內線", stay: "稚內 ANA (樂天刷卡)", note: "北大或北廣島Outlet" },
+        { date: "8/15", w: "五", title: "利尻島一日遊", trans: "渡輪+巴士", stay: "Dormy Inn (已付)", note: "KLOOK: 3936元" },
+        { date: "8/16", w: "六", title: "稚內一日遊", trans: "渡輪+巴士", stay: "Dormy Inn (已付)", note: "KLOOK: 3924元 (含早)" },
+        { date: "8/17", w: "日", title: "大移動：稚內 🚆 札幌", trans: "JR特急宗谷", stay: "札幌東急REI (JALAN)", note: "13:00稚內 -> 20:00札幌" },
+        { date: "8/18", w: "一", title: "札幌市區觀光", trans: "市電一日券", stay: "札幌東急REI (JALAN)", note: "白色戀人、中島公園、一幻拉麵" },
+        { date: "8/19", w: "二", title: "札幌漫遊", trans: "JR", stay: "札幌東急REI (JALAN)", note: "早餐海膽飯、北海道神宮" },
+        { date: "8/20", w: "三", title: "移動：札幌 ✈️ 東京", trans: "ANA 國內線", stay: "東武淺草站前 (JALAN)", note: "12:30 CTS -> 14:10 HND" },
+        { date: "8/21", w: "四", title: "日光 2日遊 (Day1)", trans: "東武日光票(1063元)", stay: "日光 星之宿 (樂天)", note: "" },
+        { date: "8/22", w: "五", title: "日光 2日遊 (Day2)", trans: "東武日光票(397元)", stay: "東京車站東橫 (官網)", note: "回東京" },
+        { date: "8/23", w: "六", title: "東京市區一日遊", trans: "地鐵/JR", stay: "東京車站東橫 (JALAN)", note: "" },
+        { date: "8/24", w: "日", title: "返家：成田 ✈️ 高雄", trans: "華航", stay: "溫暖的家", note: "金子半之助, 12:40 NRT -> 15:05 KHH" }
+    ];
+
+    // 全域變數
+    let expenses = JSON.parse(localStorage.getItem('myTripExpenses')) || [];
+    let shopList = JSON.parse(localStorage.getItem('myTripShopList')) || [];
+    let exchangeRate = parseFloat(localStorage.getItem('myTripRate')) || 0.22;
+
+    // --- 2. 初始化 ---
+    document.addEventListener('DOMContentLoaded', () => {
+        renderItinerary();
+        renderExpenses();
+        renderShopList();
+        document.getElementById('setting-rate').value = exchangeRate;
+        updateRateDisplay();
     });
 
-    // 💾 當 items 變動時，自動存入 LocalStorage
-    useEffect(() => {
-        localStorage.setItem("kansai_2026_data", JSON.stringify(items));
-    }, [items]);
+    // --- 3. 頁面切換邏輯 ---
+    function switchTab(viewId, element) {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        document.getElementById('view-' + viewId).classList.add('active');
+        
+        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
 
-    const budget = 200000;
-    const totalSpent = items.reduce((sum, i) => sum + i.cost, 0);
+        const titles = { 'itinerary': '📅 行程總覽', 'wallet': '💰 旅遊記帳', 'shopping': '🛒 購物清單', 'settings': '⚙️ 設定' };
+        document.getElementById('page-title').innerText = titles[viewId];
+    }
 
-    // 🗑️ 刪除功能
-    const handleDelete = (id) => {
-        if(window.confirm("確定要刪除這個行程嗎？此操作無法復原喔！")) {
-            setItems(items.filter(item => item.id !== id));
+    // --- 4. 行程功能 ---
+    function renderItinerary() {
+        const container = document.getElementById('itinerary-list');
+        container.innerHTML = itineraryData.map(item => `
+            <div class="card">
+                <div class="day-header">
+                    <span class="day-date">${item.date} (${item.w})</span>
+                </div>
+                <div class="day-title">${item.title}</div>
+                <div class="info-row"><span class="info-icon">🚆</span> ${item.trans}</div>
+                <div class="info-row"><span class="info-icon">🏨</span> ${item.stay}</div>
+                ${item.note ? `<div class="info-row" style="color:#888; font-style:italic;"><span class="info-icon">📝</span> ${item.note}</div>` : ''}
+            </div>
+        `).join('');
+    }
+
+    // --- 5. 記帳功能 ---
+    function updateRate() {
+        exchangeRate = parseFloat(document.getElementById('setting-rate').value);
+        localStorage.setItem('myTripRate', exchangeRate);
+        updateRateDisplay();
+        calcPreview();
+        renderExpenses(); // 重算總額
+    }
+
+    function updateRateDisplay() {
+        document.getElementById('rate-display').innerText = `匯率: ${exchangeRate}`;
+    }
+
+    function calcPreview() {
+        const amt = parseFloat(document.getElementById('expense-amount').value) || 0;
+        const curr = document.getElementById('expense-currency').value;
+        const total = (curr === 'JPY') ? Math.round(amt * exchangeRate) : amt;
+        document.getElementById('twd-preview').innerText = `$${total}`;
+    }
+
+    // 卡片提示邏輯 (關鍵！)
+    function showCardTip() {
+        const method = document.getElementById('expense-method').value;
+        const tipBox = document.getElementById('card-tip');
+        let tipText = "";
+
+        if(method === "中信ANA") tipText = "✈️ 記得刷這張累積哩程！";
+        else if(method === "玉山世界") tipText = "👑 大額消費建議用此卡";
+        else if(method === "國泰CUBE") tipText = "⚠️ 請切換權益至「日本賞」(3%)";
+        else if(method === "西瓜卡") tipText = "🐧 記得要記一筆「儲值」喔";
+
+        if(tipText) {
+            tipBox.style.display = 'block';
+            tipBox.innerText = tipText;
+        } else {
+            tipBox.style.display = 'none';
         }
-    };
+    }
 
-    const s = {
-        container: { maxWidth: '100%', minHeight: '100vh', background: '#FFF8F0' },
-        header: {
-            background: 'linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%)',
-            padding: '20px 24px 30px', borderRadius: '0 0 32px 32px', color: 'white',
-            boxShadow: '0 8px 20px rgba(255, 154, 158, 0.4)', position: 'sticky', top: 0, zIndex: 100
-        },
-        titleRow: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' },
-        crabIcon: { fontSize: '32px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' },
-        appTitle: { fontSize: '22px', fontWeight: '800', letterSpacing: '1px', lineHeight: '1.2', textShadow: '0 2px 4px rgba(0,0,0,0.1)' },
-        moneyCard: {
-            background: 'rgba(255, 255, 255, 0.25)', backdropFilter: 'blur(10px)',
-            borderRadius: '20px', padding: '16px 24px', display: 'flex', justifyContent: 'space-between',
-            alignItems: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
-        },
-        moneyLabel: { fontSize: '12px', opacity: 0.9, marginBottom: '4px' },
-        moneyValue: { fontSize: '20px', fontWeight: 'bold' },
+    function addExpense() {
+        const name = document.getElementById('expense-name').value;
+        const amount = parseFloat(document.getElementById('expense-amount').value);
+        const currency = document.getElementById('expense-currency').value;
+        const method = document.getElementById('expense-method').value;
+
+        if(!name || !amount) { alert('請輸入項目和金額'); return; }
+
+        const twd = (currency === 'JPY') ? Math.round(amount * exchangeRate) : amount;
+
+        const newExp = {
+            id: Date.now(),
+            date: new Date().toLocaleDateString(),
+            name, amount, currency, method, twd
+        };
+
+        expenses.unshift(newExp);
+        localStorage.setItem('myTripExpenses', JSON.stringify(expenses));
         
-        sectionHeader: { padding: '24px 24px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-        sectionTitle: { fontSize: '18px', fontWeight: 'bold', color: '#E86A6A', display:'flex', alignItems:'center', gap:'8px' },
-        
-        smartBtn: {
-            background: '#333', color: '#F4B942', border: 'none', padding: '8px 16px',
-            borderRadius: '20px', fontSize: '13px', fontWeight: 'bold',
-            display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-            cursor: 'pointer', transition: 'transform 0.1s'
-        },
+        // 重置表單
+        document.getElementById('expense-name').value = '';
+        document.getElementById('expense-amount').value = '';
+        renderExpenses();
+        alert('記帳成功！');
+    }
 
-        card: {
-            background: 'white', margin: '0 20px 16px', padding: '16px', borderRadius: '20px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', gap: '16px',
-            border: '2px solid white', position: 'relative', animation: 'fadeIn 0.5s ease'
-        },
-        deleteBtn: {
-            position: 'absolute', top: '-8px', right: '-8px', width: '24px', height: '24px',
-            background: '#FF6B6B', color: 'white', borderRadius: '50%', border: '2px solid white',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            fontSize: '14px', fontWeight: 'bold', boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
-        },
-        dateCircle: {
-            width: '52px', height: '52px', borderRadius: '50%', background: '#333', color: '#F4B942',
-            display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold', fontSize: '14px',
-            border: '2px solid #F4B942', flexShrink: 0
-        },
-        content: { flex: 1, overflow: 'hidden' },
-        itemTitle: { fontSize: '17px', fontWeight: 'bold', color: '#333', marginBottom: '6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-        itemSub: { fontSize: '13px', color: '#888', display:'flex', alignItems:'center', gap:'6px', flexWrap: 'wrap' },
-        tag: (type) => {
-            const colors = getTypeColor(type);
-            return { 
-                fontSize:'11px', padding:'3px 8px', borderRadius:'8px', 
-                background: colors.bg, color: colors.text, fontWeight: 'bold' 
-            };
-        },
-        cost: { color: '#FF6B6B', fontWeight: 'bold', fontSize: '16px' },
+    function renderExpenses() {
+        const list = document.getElementById('expense-list');
+        let totalTWD = 0;
 
-        nav: {
-            position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white',
-            padding: '12px 0 24px', borderRadius: '24px 24px 0 0',
-            display: 'flex', justifyContent: 'space-around',
-            boxShadow: '0 -4px 20px rgba(0,0,0,0.05)', zIndex: 100
-        },
-        navItem: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#CCC', cursor: 'pointer' },
-        navActive: { color: '#FF9A9E', fontWeight: 'bold' }
-    };
-
-    return (
-        <div style={s.container}>
-            {/* Header */}
-            <div style={s.header}>
-                <div style={s.titleRow}>
-                    <div style={s.crabIcon}>🦀</div>
-                    <div style={s.appTitle}>
-                        <div style={{fontSize:'14px', fontWeight:'normal', opacity:0.9}}>2026 關西</div>
-                        <div>螃蟹橫著走</div>
+        list.innerHTML = expenses.map(exp => {
+            totalTWD += exp.twd;
+            return `
+                <div style="border-bottom:1px solid #eee; padding:10px 0; display:flex; justify-content:space-between;">
+                    <div>
+                        <div style="font-weight:600;">${exp.name}</div>
+                        <div style="font-size:12px; color:#888;">${exp.method} | ${exp.date}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="color:var(--primary); font-weight:bold;">$${exp.twd}</div>
+                        <div style="font-size:12px; color:#aaa;">${exp.amount} ${exp.currency}</div>
                     </div>
                 </div>
-                <div style={s.moneyCard}>
-                    <div><div style={s.moneyLabel}>剩餘預算</div><div style={s.moneyValue}>¥{(budget - totalSpent).toLocaleString()}</div></div>
-                    <div style={{height:'30px', width:'1px', background:'rgba(255,255,255,0.4)'}}></div>
-                    <div style={{textAlign:'right'}}><div style={s.moneyLabel}>總支出</div><div style={s.moneyValue}>¥{totalSpent.toLocaleString()}</div></div>
-                </div>
+            `;
+        }).join('');
+
+        document.getElementById('total-spent').innerText = `$${totalTWD.toLocaleString()}`;
+    }
+
+    // --- 6. 購物清單功能 ---
+    function addShopItem() {
+        const input = document.getElementById('shop-input');
+        if(!input.value) return;
+        
+        shopList.push({ txt: input.value, done: false });
+        saveShop();
+        input.value = '';
+        renderShopList();
+    }
+
+    function toggleShop(index) {
+        shopList[index].done = !shopList[index].done;
+        saveShop();
+        renderShopList();
+    }
+
+    function saveShop() {
+        localStorage.setItem('myTripShopList', JSON.stringify(shopList));
+    }
+
+    function renderShopList() {
+        const container = document.getElementById('shopping-list');
+        container.innerHTML = shopList.map((item, idx) => `
+            <div class="shop-item">
+                <input type="checkbox" ${item.done ? 'checked' : ''} onclick="toggleShop(${idx})">
+                <span class="${item.done ? 'checked' : ''}">${item.txt}</span>
+                <button onclick="deleteShop(${idx})" style="margin-left:auto; background:none; border:none; color:#ccc;">✕</button>
             </div>
+        `).join('');
+    }
 
-            {/* Content */}
-            <div style={s.sectionHeader}>
-                <div style={s.sectionTitle}>📅 行程列表 ({items.length})</div>
-                <button style={s.smartBtn} onClick={() => setShowImport(true)}>
-                    <span>✨</span> 智慧匯入
-                </button>
-            </div>
+    function deleteShop(index) {
+        shopList.splice(index, 1);
+        saveShop();
+        renderShopList();
+    }
 
-            <div style={{paddingBottom:'20px'}}>
-                {items.length === 0 ? (
-                    <div style={{textAlign:'center', padding:'40px', color:'#CCC'}}>
-                        <div style={{fontSize:'40px', marginBottom:'10px'}}>🍃</div>
-                        目前沒有行程<br/>點擊右上角新增
-                    </div>
-                ) : (
-                    items.map(item => (
-                        <div key={item.id} style={s.card}>
-                            {/* 刪除按鈕 */}
-                            <div style={s.deleteBtn} onClick={() => handleDelete(item.id)}>×</div>
-                            
-                            <div style={s.dateCircle}>{item.date}</div>
-                            <div style={s.content}>
-                                <div style={s.itemTitle}>{item.title}</div>
-                                <div style={s.itemSub}>
-                                    <span style={s.tag(item.type)}>{item.type}</span>
-                                    <span style={{display:'flex', alignItems:'center', gap:'4px'}}>
-                                        📍 {item.location}
-                                    </span>
-                                </div>
-                            </div>
-                            <div style={s.cost}>¥{item.cost.toLocaleString()}</div>
-                        </div>
-                    ))
-                )}
-            </div>
-
-            {/* Bottom Nav */}
-            <div style={s.nav}>
-                <div style={{...s.navItem, ...s.navActive}}>
-                    <span style={{fontSize:'24px'}}>🗺️</span> 行程
-                </div>
-                <div style={s.navItem}>
-                    <span style={{fontSize:'24px'}}>💰</span> 記帳
-                </div>
-                <div style={s.navItem}>
-                    <span style={{fontSize:'24px'}}>🛍️</span> 購物
-                </div>
-            </div>
-
-            {showImport && <SmartImporter onClose={()=>setShowImport(false)} onAdd={(i)=>setItems([...items, {...i, id:Date.now()}])} />}
-        </div>
-    );
-};
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+    function clearData() {
+        if(confirm("確定要刪除所有記帳和購物資料嗎？")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
 </script>
+
 </body>
 </html>
