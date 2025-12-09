@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>關西螃蟹</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- SheetJS for Excel Export -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+  <!-- iOS Standalone Mode Settings -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="關西螃蟹">
+  <meta name="theme-color" content="#FF6B6B">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- PWA Manifest (inline as data URI) -->
+  <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%E9%97%9C%E8%A5%BF%E8%9E%83%E8%9F%B9%E6%A9%AB%E8%91%97%E8%B5%B0%22%2C%22short_name%22%3A%22%E9%97%9C%E8%A5%BF%E8%9E%83%E8%9F%B9%22%2C%22description%22%3A%222026%E5%B9%B4%E6%97%A5%E6%9C%AC%E9%97%9C%E8%A5%BF%E6%97%85%E9%81%8A%E8%A8%98%E5%B8%B3App%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23E0F7FA%22%2C%22theme_color%22%3A%22%23FF6B6B%22%2C%22orientation%22%3A%22portrait%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%2520viewBox%3D%270%25200%2520192%2520192%27%253E%253Crect%2520width%3D%27192%27%2520height%3D%27192%27%2520fill%3D%27%2523FF6B6B%27%2520rx%3D%2748%27%2F%253E%253Ctext%2520x%3D%2796%27%2520y%3D%2796%27%2520font-size%3D%27100%27%2520text-anchor%3D%27middle%27%2520dy%3D%27.35em%27%253E%25F0%259F%25A6%2580%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%2C%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%2520viewBox%3D%270%25200%2520512%2520512%27%253E%253Crect%2520width%3D%27512%27%2520height%3D%27512%27%2520fill%3D%27%2523FF6B6B%27%2520rx%3D%27128%27%2F%253E%253Ctext%2520x%3D%27256%27%2520y%3D%27256%27%2520font-size%3D%27280%27%2520text-anchor%3D%27middle%27%2520dy%3D%27.35em%27%253E%25F0%259F%25A6%2580%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+
+  <!-- App Icons -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23FF6B6B' rx='40'/%3E%3Ctext x='90' y='90' font-size='100' text-anchor='middle' dy='.35em'%3E🦀%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B' rx='25'/%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' dy='.35em'%3E🦀%3C/text%3E%3C/svg%3E">
+
+  <!-- Splash Screen for iOS -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Hi+Melody&display=swap');
+    
+    body {
+      font-family: 'Gaegu', cursive;
+      background-color: #E0F7FA;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: none;
+      user-select: none;
+    }
+    
+    .safe-area-top {
+      padding-top: env(safe-area-inset-top);
+      background-color: #FF6B6B;
+    }
+    .safe-area-bottom {
+      padding-bottom: env(safe-area-inset-bottom);
+      background-color: white;
+    }
+
+    .korean-3d-btn {
+      transition: all 0.1s;
+      box-shadow: 0px 4px 0px 0px rgba(0,0,0,0.15), 0px 6px 10px rgba(0,0,0,0.05);
+      transform: translateY(0);
+      position: relative;
+    }
+    
+    .korean-3d-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.15);
+    }
+
+    .paper-texture {
+      background-color: #fffbf0;
+      background-image: radial-gradient(#d4c5a6 0.5px, transparent 0.5px);
+      background-size: 10px 10px;
+    }
+    
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .slide-in { animation: slideIn 0.35s ease-out; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+    
+    .slide-up { animation: slideUp 0.35s ease-out; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
+
+    input, select, textarea {
+      font-size: 16px !important;
+      user-select: text;
+    }
+    
+    /* 日期標籤樣式 */
+    .date-pill {
+      background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+      box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+    }
+    
+    /* 分類標籤 */
+    .category-tag {
+      transition: all 0.2s;
+    }
+    .category-tag:hover {
+      transform: scale(1.05);
+    }
+    
+    /* 購物清單勾選動畫 */
+    .check-bounce {
+      animation: checkBounce 0.3s ease-out;
+    }
+    @keyframes checkBounce {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Modal 背景 */
+    .modal-backdrop {
+      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+    /* 進度條 */
+    .progress-bar {
+      transition: width 0.5s ease-out;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden bg-[#E0F7FA]">
+  <div id="root" class="h-full w-full"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- Icons ---
+    const Icon = ({ children, size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
+    );
+    const Icons = {
+      Plus: (p) => <Icon {...p}><path d="M5 12h14"/><path d="M12 5v14"/></Icon>,
+      Trash2: (p) => <Icon {...p}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></Icon>,
+      Download: (p) => <Icon {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></Icon>,
+      Train: (p) => <Icon {...p}><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h0"/><path d="M16 15h0"/></Icon>,
+      ShoppingBag: (p) => <Icon {...p}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></Icon>,
+      Map: (p) => <Icon {...p}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></Icon>,
+      Home: (p) => <Icon {...p}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></Icon>,
+      Coins: (p) => <Icon {...p}><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></Icon>,
+      ChevronDown: (p) => <Icon {...p}><path d="m6 9 6 6 6-6"/></Icon>,
+      ChevronUp: (p) => <Icon {...p}><path d="m18 15-6-6-6 6"/></Icon>,
+      ChevronLeft: (p) => <Icon {...p}><path d="m15 18-6-6 6-6"/></Icon>,
+      ChevronRight: (p) => <Icon {...p}><path d="m9 18 6-6-6-6"/></Icon>,
+      Calendar: (p) => <Icon {...p}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></Icon>,
+      Clock: (p) => <Icon {...p}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></Icon>,
+      Edit: (p) => <Icon {...p}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></Icon>,
+      Check: (p) => <Icon {...p}><polyline points="20 6 9 17 4 12"/></Icon>,
+      X: (p) => <Icon {...p}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></Icon>,
+      FileSpreadsheet: (p) => <Icon {...p}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></Icon>,
+      Camera: (p) => <Icon {...p}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></Icon>,
+      Star: (p) => <Icon {...p}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></Icon>,
+      MapPin: (p) => <Icon {...p}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></Icon>,
+      Coffee: (p) => <Icon {...p}><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></Icon>,
+      Utensils: (p) => <Icon {...p}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></Icon>,
+    };
+
+    // --- Data ---
+    const INITIAL_ITINERARY = [
+      { id: 1, date: '2/2', weekday: '日', content: '大阪 → 17:00名門大洋渡輪 (前往門司港)', transport: '名門大洋渡輪', stay: '船上住宿', cost: 15000, costNote: '住宿費', notes: '', highlights: ['渡輪初體驗', '欣賞瀨戶內海夜景'], meals: { breakfast: '', lunch: '', dinner: '船上餐廳' } },
+      { id: 2, date: '2/3', weekday: '一', content: '抵達門司港 → 門司港懷舊區 → 小倉城 → 福岡博多', transport: 'JR九州 (福岡廣域) 1', stay: '福岡 Quintessa hotel', cost: 3500, costNote: '交通費', notes: '', highlights: ['門司港懷舊建築', '燒咖哩'], meals: { breakfast: '船上', lunch: '門司港燒咖哩', dinner: '博多拉麵' } },
+      { id: 3, date: '2/4', weekday: '二', content: '太宰府、柳川 → 櫛田神社 → 川端通商店街 → 博多運河城', transport: 'JR九州 (福岡廣域) 2', stay: '福岡 Quintessa hotel', cost: 0, costNote: '', notes: '', highlights: ['太宰府天滿宮', '柳川遊船'], meals: { breakfast: '飯店', lunch: '柳川鰻魚飯', dinner: '' } },
+      { id: 4, date: '2/5', weekday: '三', content: '福岡 → (1 hr) 廣島嚴島神社 → 岡山', transport: 'JR西日本全區Pass 1', stay: '岡山東橫inn', cost: 33315, costNote: 'Pass 26000 + 住宿 7315', notes: '', highlights: ['嚴島神社大鳥居', '宮島鹿'], meals: { breakfast: '飯店', lunch: '廣島燒', dinner: '岡山' } },
+      { id: 5, date: '2/6', weekday: '四', content: '岡山 → 出雲市 → 出雲大社 → 鳥取', transport: 'JR西日本全區Pass 2', stay: '鳥取東橫inn', cost: 6745, costNote: '住宿費', notes: '', highlights: ['出雲大社結緣', '神話之國'], meals: { breakfast: '飯店', lunch: '出雲蕎麥麵', dinner: '鳥取' } },
+      { id: 6, date: '2/7', weekday: '五', content: '鳥取砂丘 → (城崎溫泉) → 京都', transport: '觀光計程車3小時', stay: 'Ala hotel 京都站前', cost: 38170, costNote: '車資4000 + 住宿 34170', notes: '', highlights: ['鳥取砂丘', '城崎溫泉街'], meals: { breakfast: '飯店', lunch: '海鮮丼', dinner: '京都' } },
+      { id: 7, date: '2/8', weekday: '六', content: '京都觀光 / 觀光火車', transport: '觀光火車', stay: 'Ala hotel 京都站前', cost: 0, costNote: '待確認', notes: '記得預約觀光火車', highlights: ['嵐山小火車', '竹林'], meals: { breakfast: '飯店', lunch: '', dinner: '' } },
+      { id: 8, date: '2/9', weekday: '日', content: '京都 → 敦賀 → 金澤 → 京都', transport: 'JR特急雷鳥號', stay: 'Ala hotel 京都站前', cost: 0, costNote: '', notes: '', highlights: ['金澤兼六園', '21世紀美術館'], meals: { breakfast: '飯店', lunch: '金澤海鮮', dinner: '京都' } },
+      { id: 9, date: '2/10', weekday: '一', content: '梅田搭阪急巴士 → 勝尾寺 達摩 → 難波Salmon Kat → 臨空城OMO', transport: 'JR西日本全區Pass 7', stay: '臨空城OMO 7', cost: 0, costNote: '', notes: '', highlights: ['勝尾寺達摩', '臨空城Outlet'], meals: { breakfast: '飯店', lunch: '', dinner: 'Outlet美食街' } },
+      { id: 10, date: '2/11', weekday: '二', content: '臨空城購物 → 傍晚返高雄', transport: '長榮BR 147 20:20', stay: '返程', cost: 0, costNote: '', notes: '記得買伴手禮', highlights: ['最後衝刺購物'], meals: { breakfast: '飯店', lunch: 'Outlet', dinner: '機上' } },
+    ];
+    
+    const INITIAL_SHOPPING = [
+      { id: 1, item: '藥妝 (合利他命)', budget: 5000, bought: false, store: '松本清', priority: 'high' },
+      { id: 2, item: 'Uniqlo 發熱衣', budget: 10000, bought: false, store: 'Uniqlo', priority: 'medium' },
+      { id: 3, item: '機場伴手禮 (白色戀人)', budget: 3000, bought: false, store: '機場免稅店', priority: 'high' },
+      { id: 4, item: 'Loft 文具', budget: 2000, bought: false, store: 'Loft', priority: 'low' },
+      { id: 5, item: '抹茶零食', budget: 1500, bought: false, store: '便利商店', priority: 'medium' },
+    ];
+    
+    const PAYMENT_METHODS = ['現金', '信用卡(中信)', '信用卡(富邦J)', '信用卡(國泰Cube)', '西瓜卡 (Suica)', 'ICOCA', 'PayPay'];
+    const BOOKING_PLATFORMS = ['現場支付', 'Agoda', 'Booking.com', 'Klook', 'KKday', 'Haft (官網)', 'Rakuten'];
+    const CATEGORIES = ['🍜 飲食', '🚃 交通', '🏨 住宿', '🛍️ 購物', '🎫 門票', '📝 其他'];
+    const BUTTON_COLORS = ['#FF9F43', '#4ECDC4', '#FF6B6B', '#6C5CE7', '#FFA502', '#2ed573'];
+    const PRIORITY_COLORS = { high: '#FF6B6B', medium: '#FF9F43', low: '#4ECDC4' };
+
+    // --- Main App ---
+    function App() {
+      const loadState = (key, defaultVal) => {
+        try {
+          const saved = localStorage.getItem(key);
+          return saved ? JSON.parse(saved) : defaultVal;
+        } catch (e) {
+          return defaultVal;
+        }
+      };
+
+      const [activeTab, setActiveTab] = useState('itinerary');
+      const [itinerary, setItinerary] = useState(() => loadState('crab_itinerary_v2', INITIAL_ITINERARY));
+      const [expenses, setExpenses] = useState(() => loadState('crab_expenses_v2', []));
+      const [shoppingList, setShoppingList] = useState(() => loadState('crab_shopping_v2', INITIAL_SHOPPING));
+      const [expandedDayId, setExpandedDayId] = useState(null);
+      const [selectedDay, setSelectedDay] = useState(null); // 每日行程獨立頁面
+      const [showExpenseModal, setShowExpenseModal] = useState(false);
+      const [expenseFilter, setExpenseFilter] = useState('all'); // 記帳篩選
+      const [showExportModal, setShowExportModal] = useState(false);
+
+      // 儲存到 LocalStorage
+      useEffect(() => { localStorage.setItem('crab_itinerary_v2', JSON.stringify(itinerary)); }, [itinerary]);
+      useEffect(() => { localStorage.setItem('crab_expenses_v2', JSON.stringify(expenses)); }, [expenses]);
+      useEffect(() => { localStorage.setItem('crab_shopping_v2', JSON.stringify(shoppingList)); }, [shoppingList]);
+
+      const [newExpense, setNewExpense] = useState({ 
+        date: '2/2', item: '', amount: '', currency: 'JPY', 
+        category: '🍜 飲食', method: '現金', platform: '現場支付', note: '' 
+      });
+      const [newShopItem, setNewShopItem] = useState({ item: '', budget: '', store: '', priority: 'medium' });
+
+      // 記帳功能
+      const handleAddExpense = () => {
+        if (!newExpense.item || !newExpense.amount) return;
+        setExpenses([...expenses, { id: Date.now(), ...newExpense, amount: parseFloat(newExpense.amount), timestamp: new Date().toISOString() }]);
+        setNewExpense({ ...newExpense, item: '', amount: '', note: '' });
+        setShowExpenseModal(false);
+      };
+      
+      const handleDeleteExpense = (id) => {
+        if (confirm('確定要刪除這筆記錄嗎？')) {
+          setExpenses(expenses.filter(e => e.id !== id));
+        }
+      };
+      
+      // 購物清單功能
+      const handleAddShoppingItem = () => {
+        if (!newShopItem.item) return;
+        setShoppingList([...shoppingList, { 
+          id: Date.now(), 
+          item: newShopItem.item, 
+          budget: parseFloat(newShopItem.budget) || 0, 
+          store: newShopItem.store,
+          priority: newShopItem.priority,
+          bought: false 
+        }]);
+        setNewShopItem({ item: '', budget: '', store: '', priority: 'medium' });
+      };
+      
+      const toggleShoppingItem = (id) => {
+        setShoppingList(shoppingList.map(item => 
+          item.id === id ? { ...item, bought: !item.bought } : item
+        ));
+      };
+      
+      const deleteShoppingItem = (id) => {
+        if (confirm('確定要刪除這個項目嗎？')) {
+          setShoppingList(shoppingList.filter(item => item.id !== id));
+        }
+      };
+      
+      // 行程功能
+      const updateItinerary = (id, field, value) => {
+        setItinerary(itinerary.map(item => item.id === id ? { ...item, [field]: value } : item));
+      };
+      
+      const toggleDay = (id) => setExpandedDayId(expandedDayId === id ? null : id);
+
+      // 統計數據
+      const totalSpentJPY = expenses.filter(e => e.currency === 'JPY').reduce((acc, curr) => acc + curr.amount, 0);
+      const totalSpentTWD = expenses.filter(e => e.currency === 'TWD').reduce((acc, curr) => acc + curr.amount, 0);
+      const totalBudget = itinerary.reduce((acc, day) => acc + (day.cost || 0), 0);
+      const shoppingProgress = shoppingList.length > 0 
+        ? Math.round((shoppingList.filter(i => i.bought).length / shoppingList.length) * 100) 
+        : 0;
+
+      // 依日期篩選的記帳
+      const getExpensesByDate = (date) => expenses.filter(e => e.date === date);
+      const filteredExpenses = expenseFilter === 'all' 
+        ? expenses 
+        : expenses.filter(e => e.date === expenseFilter);
+
+      // 匯出 Excel (真正的 xlsx)
+      const exportToExcel = () => {
+        const wb = XLSX.utils.book_new();
+        
+        // 1. 行程總覽 Sheet
+        const itineraryData = itinerary.map(day => ({
+          '日期': day.date,
+          '星期': day.weekday || '',
+          '行程內容': day.content,
+          '交通方式': day.transport,
+          '住宿': day.stay,
+          '預算花費': day.cost,
+          '備註': day.costNote,
+          '亮點': (day.highlights || []).join('、'),
+          '早餐': day.meals?.breakfast || '',
+          '午餐': day.meals?.lunch || '',
+          '晚餐': day.meals?.dinner || '',
+          '筆記': day.notes || ''
+        }));
+        const wsItinerary = XLSX.utils.json_to_sheet(itineraryData);
+        wsItinerary['!cols'] = [
+          {wch: 8}, {wch: 6}, {wch: 40}, {wch: 20}, {wch: 20}, 
+          {wch: 10}, {wch: 25}, {wch: 30}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 30}
+        ];
+        XLSX.utils.book_append_sheet(wb, wsItinerary, '行程總覽');
+        
+        // 2. 每日記帳 Sheet
+        const expenseData = expenses.map(e => ({
+          '日期': e.date,
+          '項目': e.item,
+          '金額': e.amount,
+          '幣別': e.currency,
+          '類別': e.category,
+          '支付方式': e.method,
+          '平台': e.platform,
+          '備註': e.note || '',
+          '記錄時間': e.timestamp ? new Date(e.timestamp).toLocaleString('zh-TW') : ''
+        }));
+        const wsExpenses = XLSX.utils.json_to_sheet(expenseData);
+        wsExpenses['!cols'] = [
+          {wch: 8}, {wch: 25}, {wch: 12}, {wch: 8}, {wch: 12}, 
+          {wch: 15}, {wch: 12}, {wch: 20}, {wch: 20}
+        ];
+        XLSX.utils.book_append_sheet(wb, wsExpenses, '每日記帳');
+        
+        // 3. 購物清單 Sheet
+        const shoppingData = shoppingList.map(s => ({
+          '項目': s.item,
+          '預算': s.budget || '',
+          '商店': s.store || '',
+          '優先度': s.priority === 'high' ? '高' : s.priority === 'medium' ? '中' : '低',
+          '已購買': s.bought ? '✓' : ''
+        }));
+        const wsShopping = XLSX.utils.json_to_sheet(shoppingData);
+        wsShopping['!cols'] = [{wch: 25}, {wch: 10}, {wch: 15}, {wch: 10}, {wch: 10}];
+        XLSX.utils.book_append_sheet(wb, wsShopping, '購物清單');
+        
+        // 4. 花費統計 Sheet
+        const categoryStats = {};
+        CATEGORIES.forEach(cat => { categoryStats[cat] = { JPY: 0, TWD: 0 }; });
+        expenses.forEach(e => {
+          if (categoryStats[e.category]) {
+            categoryStats[e.category][e.currency] += e.amount;
+          }
+        });
+        
+        const statsData = [
+          { '項目': '日幣總花費', '金額': totalSpentJPY, '幣別': 'JPY' },
+          { '項目': '台幣總花費', '金額': totalSpentTWD, '幣別': 'TWD' },
+          { '項目': '行程預算總計', '金額': totalBudget, '幣別': 'JPY' },
+          { '項目': '', '金額': '', '幣別': '' },
+          { '項目': '=== 分類統計 ===', '金額': '', '幣別': '' },
+          ...CATEGORIES.map(cat => ({
+            '項目': cat,
+            '金額': categoryStats[cat].JPY,
+            '幣別': 'JPY'
+          }))
+        ];
+        const wsStats = XLSX.utils.json_to_sheet(statsData);
+        wsStats['!cols'] = [{wch: 20}, {wch: 15}, {wch: 10}];
+        XLSX.utils.book_append_sheet(wb, wsStats, '花費統計');
+        
+        // 5. 每日花費明細 Sheets
+        itinerary.forEach(day => {
+          const dayExpenses = getExpensesByDate(day.date);
+          if (dayExpenses.length > 0) {
+            const dayData = dayExpenses.map(e => ({
+              '項目': e.item,
+              '金額': e.amount,
+              '幣別': e.currency,
+              '類別': e.category,
+              '支付方式': e.method,
+              '備註': e.note || ''
+            }));
+            // 加入當日總計
+            dayData.push({
+              '項目': '【當日總計】',
+              '金額': dayExpenses.filter(e => e.currency === 'JPY').reduce((a, b) => a + b.amount, 0),
+              '幣別': 'JPY',
+              '類別': '',
+              '支付方式': '',
+              '備註': ''
+            });
+            const wsDay = XLSX.utils.json_to_sheet(dayData);
+            wsDay['!cols'] = [{wch: 25}, {wch: 12}, {wch: 8}, {wch: 12}, {wch: 15}, {wch: 20}];
+            XLSX.utils.book_append_sheet(wb, wsDay, `${day.date} ${day.weekday || ''}`);
+          }
+        });
+        
+        // 下載檔案
+        XLSX.writeFile(wb, '2026關西螃蟹橫著走_完整紀錄.xlsx');
+        setShowExportModal(false);
+      };
+
+      // Tab 按鈕
+      const TabButton = ({ id, IconComp, label, color }) => (
+        <button
+          onClick={() => { setActiveTab(id); setSelectedDay(null); }}
+          className={`flex-1 flex flex-col items-center justify-center p-2 rounded-2xl mx-1 font-hand font-bold text-lg transition-all duration-200 ${activeTab === id ? 'bg-gray-50 -translate-y-2 shadow-lg' : 'bg-transparent text-gray-400'}`}
+          style={{ color: activeTab === id ? color : '#bbb' }}
+        >
+          <IconComp size={28} />
+          <span className="text-xs mt-1">{label}</span>
+        </button>
+      );
+
+      // 每日行程獨立頁面
+      const DayDetailPage = ({ day, onClose }) => {
+        const dayExpenses = getExpensesByDate(day.date);
+        const dayTotalJPY = dayExpenses.filter(e => e.currency === 'JPY').reduce((a, b) => a + b.amount, 0);
+        const dayTotalTWD = dayExpenses.filter(e => e.currency === 'TWD').reduce((a, b) => a + b.amount, 0);
+        
+        return (
+          <div className="fixed inset-0 bg-white z-50 flex flex-col slide-in">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E] p-4 pt-12 safe-area-top">
+              <button onClick={onClose} className="absolute top-12 left-4 text-white p-2">
+                <Icons.ChevronLeft size={28} />
+              </button>
+              <div className="text-center text-white">
+                <div className="text-4xl mb-2">🦀</div>
+                <div className="text-3xl font-black font-hand">{day.date} ({day.weekday})</div>
+                <div className="text-sm opacity-80 mt-1">{day.stay}</div>
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4 paper-texture">
+              {/* 行程內容 */}
+              <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100 mb-4">
+                <h3 className="font-hand font-bold text-lg text-gray-700 mb-2 flex items-center gap-2">
+                  <Icons.Map size={20} className="text-[#4ECDC4]" /> 今日行程
+                </h3>
+                <p className="font-hand text-gray-600 leading-relaxed">{day.content}</p>
+                
+                {/* 交通 */}
+                <div className="mt-3 flex items-center gap-2 bg-blue-50 p-2 rounded-lg">
+                  <Icons.Train size={18} className="text-blue-500" />
+                  <span className="font-hand text-sm text-blue-700">{day.transport}</span>
+                </div>
+              </div>
+              
+              {/* 亮點 */}
+              {day.highlights && day.highlights.length > 0 && (
+                <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100 mb-4">
+                  <h3 className="font-hand font-bold text-lg text-gray-700 mb-2 flex items-center gap-2">
+                    <Icons.Star size={20} className="text-yellow-500" /> 今日亮點
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {day.highlights.map((h, i) => (
+                      <span key={i} className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-hand text-sm">
+                        ✨ {h}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* 餐食 */}
+              {day.meals && (
+                <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100 mb-4">
+                  <h3 className="font-hand font-bold text-lg text-gray-700 mb-2 flex items-center gap-2">
+                    <Icons.Utensils size={20} className="text-orange-500" /> 今日餐食
+                  </h3>
+                  <div className="space-y-2">
+                    {day.meals.breakfast && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🌅</span>
+                        <span className="font-hand text-gray-600">早餐: {day.meals.breakfast}</span>
+                      </div>
+                    )}
+                    {day.meals.lunch && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">☀️</span>
+                        <span className="font-hand text-gray-600">午餐: {day.meals.lunch}</span>
+                      </div>
+                    )}
+                    {day.meals.dinner && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🌙</span>
+                        <span className="font-hand text-gray-600">晚餐: {day.meals.dinner}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* 當日花費 */}
+              <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100 mb-4">
+                <h3 className="font-hand font-bold text-lg text-gray-700 mb-2 flex items-center gap-2">
+                  <Icons.Coins size={20} className="text-[#FF9F43]" /> 當日花費
+                </h3>
+                <div className="flex justify-between items-center bg-gradient-to-r from-orange-50 to-yellow-50 p-3 rounded-xl mb-3">
+                  <div>
+                    <div className="text-2xl font-black font-hand text-[#FF9F43]">¥{dayTotalJPY.toLocaleString()}</div>
+                    {dayTotalTWD > 0 && <div className="text-lg font-bold font-hand text-[#4ECDC4]">${dayTotalTWD.toLocaleString()}</div>}
+                  </div>
+                  <div className="text-sm font-hand text-gray-500">
+                    {dayExpenses.length} 筆記錄
+                  </div>
+                </div>
+                
+                {dayExpenses.length > 0 ? (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {dayExpenses.map(expense => (
+                      <div key={expense.id} className="flex justify-between items-center bg-gray-50 p-2 rounded-lg">
+                        <div>
+                          <span className="font-hand font-bold text-gray-700">{expense.item}</span>
+                          <span className="ml-2 text-xs text-gray-400">{expense.category}</span>
+                        </div>
+                        <span className="font-hand font-bold text-[#FF9F43]">
+                          {expense.currency === 'JPY' ? '¥' : '$'}{expense.amount.toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-400 font-hand py-4">還沒有記帳紀錄</p>
+                )}
+                
+                {/* 快速記帳按鈕 */}
+                <button 
+                  onClick={() => { 
+                    setNewExpense({...newExpense, date: day.date}); 
+                    setShowExpenseModal(true); 
+                  }}
+                  className="w-full mt-3 bg-[#FF9F43] text-white font-hand font-bold py-2 rounded-xl korean-3d-btn border-2 border-black flex justify-center items-center gap-2"
+                >
+                  <Icons.Plus size={18} /> 記一筆
+                </button>
+              </div>
+              
+              {/* 筆記 */}
+              <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100 mb-20">
+                <h3 className="font-hand font-bold text-lg text-gray-700 mb-2 flex items-center gap-2">
+                  <Icons.Edit size={20} className="text-purple-500" /> 筆記
+                </h3>
+                <textarea 
+                  value={day.notes || ''} 
+                  onChange={(e) => updateItinerary(day.id, 'notes', e.target.value)}
+                  placeholder="寫下今天的心情、發現、或重要事項..."
+                  className="w-full h-32 bg-gray-50 rounded-xl p-3 font-hand text-gray-600 outline-none border-2 border-dashed border-gray-200 focus:border-purple-300"
+                />
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // 快速記帳 Modal
+      const ExpenseModal = () => (
+        <div className="fixed inset-0 z-50 flex items-end justify-center modal-backdrop" onClick={() => setShowExpenseModal(false)}>
+          <div className="bg-white w-full max-w-md rounded-t-3xl p-5 slide-up" onClick={e => e.stopPropagation()}>
+            <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+            <h3 className="font-hand font-bold text-xl text-gray-800 mb-4 text-center">💰 快速記帳</h3>
+            
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <select value={newExpense.date} onChange={e => setNewExpense({...newExpense, date: e.target.value})} className="w-full bg-gray-100 rounded-xl p-3 font-hand outline-none">
+                  {itinerary.map(d => <option key={d.id} value={d.date}>{d.date} ({d.weekday})</option>)}
+                </select>
+                <select value={newExpense.category} onChange={e => setNewExpense({...newExpense, category: e.target.value})} className="w-full bg-gray-100 rounded-xl p-3 font-hand outline-none">
+                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              
+              <input 
+                placeholder="買了什麼？🦀" 
+                value={newExpense.item} 
+                onChange={e => setNewExpense({...newExpense, item: e.target.value})} 
+                className="w-full text-lg font-bold border-b-2 border-dashed border-gray-300 focus:border-[#FF9F43] outline-none py-2 font-hand" 
+              />
+              
+              <div className="flex gap-2">
+                <input 
+                  type="number" 
+                  placeholder="金額" 
+                  value={newExpense.amount} 
+                  onChange={e => setNewExpense({...newExpense, amount: e.target.value})} 
+                  className="flex-1 bg-gray-100 rounded-xl p-3 font-hand font-bold text-xl outline-none" 
+                />
+                <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+                  <button onClick={() => setNewExpense({...newExpense, currency: 'JPY'})} className={`px-4 rounded-lg font-bold font-hand transition-all ${newExpense.currency === 'JPY' ? 'bg-[#FF9F43] text-white' : 'text-gray-400'}`}>¥</button>
+                  <button onClick={() => setNewExpense({...newExpense, currency: 'TWD'})} className={`px-4 rounded-lg font-bold font-hand transition-all ${newExpense.currency === 'TWD' ? 'bg-[#FF9F43] text-white' : 'text-gray-400'}`}>$</button>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <select value={newExpense.method} onChange={e => setNewExpense({...newExpense, method: e.target.value})} className="w-full text-sm bg-gray-100 rounded-xl p-3 font-hand">
+                  {PAYMENT_METHODS.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+                <select value={newExpense.platform} onChange={e => setNewExpense({...newExpense, platform: e.target.value})} className="w-full text-sm bg-gray-100 rounded-xl p-3 font-hand">
+                  {BOOKING_PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
+              
+              <input 
+                placeholder="備註 (選填)" 
+                value={newExpense.note} 
+                onChange={e => setNewExpense({...newExpense, note: e.target.value})} 
+                className="w-full bg-gray-50 rounded-xl p-3 font-hand outline-none" 
+              />
+              
+              <button onClick={handleAddExpense} className="w-full bg-[#FF9F43] text-white font-hand font-bold text-xl py-3 rounded-xl korean-3d-btn border-2 border-black flex justify-center items-center gap-2">
+                <Icons.Plus size={20} /> 記一筆
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+
+      // 匯出選項 Modal
+      const ExportModal = () => (
+        <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={() => setShowExportModal(false)}>
+          <div className="bg-white w-11/12 max-w-sm rounded-2xl p-5 fade-in" onClick={e => e.stopPropagation()}>
+            <h3 className="font-hand font-bold text-xl text-gray-800 mb-4 text-center">📊 匯出資料</h3>
+            
+            <div className="space-y-3">
+              <button onClick={exportToExcel} className="w-full bg-[#207245] text-white font-hand font-bold py-3 rounded-xl korean-3d-btn border-2 border-black flex justify-center items-center gap-2">
+                <Icons.FileSpreadsheet size={20} /> 匯出 Excel (.xlsx)
+              </button>
+              
+              <div className="bg-gray-50 rounded-xl p-3 text-sm font-hand text-gray-600">
+                <p className="font-bold mb-1">📋 匯出內容包含：</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>行程總覽</li>
+                  <li>每日記帳明細</li>
+                  <li>購物清單</li>
+                  <li>花費統計</li>
+                  <li>各日獨立分頁</li>
+                </ul>
+              </div>
+            </div>
+            
+            <button onClick={() => setShowExportModal(false)} className="w-full mt-4 text-gray-400 font-hand">取消</button>
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="flex flex-col h-full bg-white max-w-md mx-auto shadow-2xl overflow-hidden relative">
+          
+          {/* 每日行程獨立頁面 */}
+          {selectedDay && <DayDetailPage day={selectedDay} onClose={() => setSelectedDay(null)} />}
+          
+          {/* 快速記帳 Modal */}
+          {showExpenseModal && <ExpenseModal />}
+          
+          {/* 匯出 Modal */}
+          {showExportModal && <ExportModal />}
+          
+          {/* Status Bar Spacer */}
+          <div className="safe-area-top"></div>
+
+          {/* Header */}
+          <div className="bg-[#FF6B6B] p-5 relative overflow-hidden border-b-4 border-black shrink-0">
+            <div className="absolute top-[-20px] right-[-20px] w-24 h-24 bg-[#FF8787] rounded-full opacity-50 blur-xl"></div>
+            <div className="absolute bottom-[-10px] left-[-10px] w-16 h-16 bg-[#FFA5A5] rounded-full opacity-60"></div>
+            <h1 className="font-hand text-3xl font-black text-white tracking-wider flex items-center gap-2 relative z-10 drop-shadow-md">
+              <span className="text-4xl">🦀</span> 2026關西<br/>螃蟹橫著走
+            </h1>
+            <div className="flex justify-between mt-3 font-hand text-lg font-bold text-gray-800 bg-white/90 p-2 rounded-xl backdrop-blur-sm shadow-lg transform -rotate-1">
+              <div className="text-[#FF6B6B]">¥{totalSpentJPY.toLocaleString()}</div>
+              <div className="w-[2px] bg-gray-200"></div>
+              <div className="text-[#4ECDC4]">${totalSpentTWD.toLocaleString()}</div>
+            </div>
+          </div>
+
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto p-4 paper-texture no-scrollbar pb-24 relative">
+            
+            {/* Itinerary Tab */}
+            {activeTab === 'itinerary' && (
+              <div className="space-y-4 fade-in">
+                {/* 快速日期選擇 */}
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                  {itinerary.map((day, index) => (
+                    <button 
+                      key={day.id}
+                      onClick={() => setSelectedDay(day)}
+                      className="shrink-0 px-4 py-2 rounded-full font-hand font-bold text-white text-sm korean-3d-btn"
+                      style={{ backgroundColor: BUTTON_COLORS[index % BUTTON_COLORS.length] }}
+                    >
+                      {day.date}
+                    </button>
+                  ))}
+                </div>
+                
+                {/* 行程列表 */}
+                {itinerary.map((day, index) => {
+                  const isExpanded = expandedDayId === day.id;
+                  const btnColor = BUTTON_COLORS[index % BUTTON_COLORS.length];
+                  const dayExpenses = getExpensesByDate(day.date);
+                  const dayTotal = dayExpenses.filter(e => e.currency === 'JPY').reduce((a, b) => a + b.amount, 0);
+                  
+                  return (
+                    <div key={day.id} className="transition-all duration-300">
+                      <button onClick={() => toggleDay(day.id)} className={`w-full korean-3d-btn rounded-xl border-2 border-black p-4 flex items-center justify-between ${isExpanded ? 'translate-y-[4px] shadow-none bg-gray-100' : 'bg-white'}`}>
+                        <div className="flex items-center gap-3 text-left overflow-hidden">
+                          <div className="w-12 h-12 shrink-0 rounded-full flex flex-col items-center justify-center text-white font-bold font-hand text-xs border-2 border-black shadow-sm" style={{ backgroundColor: btnColor }}>
+                            <span className="text-sm">{day.date}</span>
+                            <span className="text-[10px] opacity-80">{day.weekday}</span>
+                          </div>
+                          <div className="flex flex-col overflow-hidden">
+                            <span className="font-hand font-bold text-lg text-gray-800 truncate w-40">{day.content.split('→')[0]}...</span>
+                            <span className="font-hand text-xs text-gray-500 truncate">🏠 {day.stay || '未定住宿'}</span>
+                            {dayTotal > 0 && <span className="font-hand text-xs text-[#FF9F43]">💰 ¥{dayTotal.toLocaleString()}</span>}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); setSelectedDay(day); }}
+                            className="text-gray-400 hover:text-[#4ECDC4] p-1"
+                          >
+                            <Icons.ChevronRight size={20} />
+                          </button>
+                          <div className="text-gray-400">{isExpanded ? <Icons.ChevronUp /> : <Icons.ChevronDown />}</div>
+                        </div>
+                      </button>
+                      {isExpanded && (
+                        <div className="mt-2 bg-white/60 border-2 border-dashed border-gray-300 rounded-xl p-3 fade-in">
+                          <textarea className="w-full font-hand text-lg text-gray-700 bg-white border-2 border-gray-200 rounded-lg p-2 focus:border-[#4ECDC4] outline-none" rows={3} value={day.content} onChange={(e) => updateItinerary(day.id, 'content', e.target.value)} />
+                          <div className="mt-2 grid gap-2">
+                            <div className="flex items-center gap-2 bg-blue-50 p-2 rounded-lg border border-blue-100">
+                              <Icons.Train size={16} className="text-blue-500" />
+                              <input value={day.transport} onChange={(e) => updateItinerary(day.id, 'transport', e.target.value)} className="bg-transparent w-full font-hand text-sm outline-none" placeholder="交通"/>
+                            </div>
+                            <div className="flex items-center gap-2 bg-purple-50 p-2 rounded-lg border border-purple-100">
+                              <Icons.Home size={16} className="text-purple-500" />
+                              <input value={day.stay} onChange={(e) => updateItinerary(day.id, 'stay', e.target.value)} className="bg-transparent w-full font-hand text-sm outline-none" placeholder="住宿"/>
+                            </div>
+                          </div>
+                          <button 
+                            onClick={() => setSelectedDay(day)}
+                            className="w-full mt-3 bg-[#4ECDC4] text-white font-hand font-bold py-2 rounded-lg flex items-center justify-center gap-2"
+                          >
+                            <Icons.Calendar size={16} /> 查看完整頁面
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Expenses Tab */}
+            {activeTab === 'expenses' && (
+              <div className="space-y-4 fade-in">
+                {/* 統計卡片 */}
+                <div className="bg-white p-4 rounded-2xl shadow-lg border-2 border-gray-100">
+                  <div className="grid grid-cols-3 gap-3 text-center">
+                    <div>
+                      <div className="text-2xl font-black font-hand text-[#FF6B6B]">¥{totalSpentJPY.toLocaleString()}</div>
+                      <div className="text-xs text-gray-400 font-hand">日幣花費</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-black font-hand text-[#4ECDC4]">${totalSpentTWD.toLocaleString()}</div>
+                      <div className="text-xs text-gray-400 font-hand">台幣花費</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-black font-hand text-gray-600">{expenses.length}</div>
+                      <div className="text-xs text-gray-400 font-hand">筆記錄</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 日期篩選 */}
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                  <button 
+                    onClick={() => setExpenseFilter('all')}
+                    className={`shrink-0 px-4 py-2 rounded-full font-hand font-bold text-sm transition-all ${expenseFilter === 'all' ? 'bg-[#FF9F43] text-white' : 'bg-white text-gray-500 border border-gray-200'}`}
+                  >
+                    全部
+                  </button>
+                  {itinerary.map((day) => (
+                    <button 
+                      key={day.id}
+                      onClick={() => setExpenseFilter(day.date)}
+                      className={`shrink-0 px-4 py-2 rounded-full font-hand font-bold text-sm transition-all ${expenseFilter === day.date ? 'bg-[#FF9F43] text-white' : 'bg-white text-gray-500 border border-gray-200'}`}
+                    >
+                      {day.date}
+                    </button>
+                  ))}
+                </div>
+                
+                {/* 記帳列表 */}
+                <div className="space-y-2 pb-10">
+                  {filteredExpenses.length > 0 ? (
+                    filteredExpenses.slice().reverse().map(expense => (
+                      <div key={expense.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center">
+                        <div>
+                          <span className="text-xs text-gray-400 font-hand font-bold">{expense.date} • {expense.category}</span>
+                          <div className="text-lg font-bold font-hand text-gray-800">{expense.item}</div>
+                          <div className="flex gap-2 mt-1">
+                            <span className="text-[10px] bg-gray-100 px-1.5 rounded text-gray-500">{expense.method}</span>
+                            {expense.note && <span className="text-[10px] bg-blue-50 px-1.5 rounded text-blue-500">{expense.note}</span>}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <span className="text-xl font-black font-hand text-[#FF9F43]">{expense.currency === 'JPY' ? '¥' : '$'}{expense.amount.toLocaleString()}</span>
+                          <button onClick={() => handleDeleteExpense(expense.id)} className="text-gray-300 hover:text-red-400 mt-1"><Icons.Trash2 size={14} /></button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-10">
+                      <div className="text-6xl mb-3">📝</div>
+                      <p className="font-hand text-gray-400">還沒有記帳紀錄</p>
+                      <p className="font-hand text-gray-300 text-sm">點擊下方按鈕開始記帳！</p>
+                    </div>
+                  )}
+                </div>
+                
+                {/* 浮動記帳按鈕 */}
+                <button 
+                  onClick={() => setShowExpenseModal(true)}
+                  className="fixed bottom-28 right-6 w-14 h-14 bg-[#FF9F43] text-white rounded-full shadow-lg korean-3d-btn border-2 border-black flex items-center justify-center"
+                >
+                  <Icons.Plus size={28} />
+                </button>
+              </div>
+            )}
+
+            {/* Shopping Tab */}
+            {activeTab === 'shopping' && (
+              <div className="space-y-4 fade-in">
+                {/* 進度條 */}
+                <div className="bg-white p-4 rounded-2xl shadow-lg border-2 border-gray-100">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-hand font-bold text-gray-700">購物進度</span>
+                    <span className="font-hand font-bold text-[#FF6B81]">{shoppingProgress}%</span>
+                  </div>
+                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-[#FF6B81] to-[#FF9F9F] progress-bar rounded-full" style={{ width: `${shoppingProgress}%` }}></div>
+                  </div>
+                  <div className="text-xs text-gray-400 font-hand mt-1">
+                    {shoppingList.filter(i => i.bought).length} / {shoppingList.length} 項完成
+                  </div>
+                </div>
+                
+                {/* 新增項目 */}
+                <div className="bg-white p-4 rounded-2xl shadow-lg border-2 border-gray-100">
+                  <div className="flex gap-2 mb-3">
+                    <input 
+                      placeholder="想買什麼..." 
+                      value={newShopItem.item} 
+                      onChange={e => setNewShopItem({...newShopItem, item: e.target.value})} 
+                      className="flex-1 bg-gray-100 rounded-xl px-4 py-2 font-hand text-lg focus:bg-white focus:ring-2 focus:ring-[#FF6B81] outline-none" 
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    <input 
+                      type="number"
+                      placeholder="預算 ¥" 
+                      value={newShopItem.budget} 
+                      onChange={e => setNewShopItem({...newShopItem, budget: e.target.value})} 
+                      className="bg-gray-100 rounded-xl px-3 py-2 font-hand text-sm outline-none" 
+                    />
+                    <input 
+                      placeholder="商店" 
+                      value={newShopItem.store} 
+                      onChange={e => setNewShopItem({...newShopItem, store: e.target.value})} 
+                      className="bg-gray-100 rounded-xl px-3 py-2 font-hand text-sm outline-none" 
+                    />
+                    <select 
+                      value={newShopItem.priority} 
+                      onChange={e => setNewShopItem({...newShopItem, priority: e.target.value})} 
+                      className="bg-gray-100 rounded-xl px-2 py-2 font-hand text-sm outline-none"
+                    >
+                      <option value="high">🔴 必買</option>
+                      <option value="medium">🟡 想買</option>
+                      <option value="low">🟢 看看</option>
+                    </select>
+                  </div>
+                  <button onClick={handleAddShoppingItem} className="w-full bg-[#FF6B81] text-white p-3 rounded-xl border-2 border-black korean-3d-btn font-hand font-bold flex items-center justify-center gap-2">
+                    <Icons.Plus size={20}/> 加入清單
+                  </button>
+                </div>
+                
+                {/* 購物清單 */}
+                <div className="space-y-3 pb-20">
+                  {/* 未購買 */}
+                  {shoppingList.filter(item => !item.bought).sort((a, b) => {
+                    const order = { high: 0, medium: 1, low: 2 };
+                    return order[a.priority] - order[b.priority];
+                  }).map(item => (
+                    <div 
+                      key={item.id} 
+                      className="bg-white p-4 rounded-xl border-2 cursor-pointer transition-all relative font-hand shadow-md"
+                      style={{ borderColor: PRIORITY_COLORS[item.priority] }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3" onClick={() => toggleShoppingItem(item.id)}>
+                          <div 
+                            className="w-7 h-7 rounded-full border-2 flex items-center justify-center"
+                            style={{ borderColor: PRIORITY_COLORS[item.priority] }}
+                          ></div>
+                          <div>
+                            <div className="font-bold text-lg text-gray-700">{item.item}</div>
+                            <div className="text-xs text-gray-400 flex gap-2">
+                              {item.budget > 0 && <span>¥{item.budget.toLocaleString()}</span>}
+                              {item.store && <span>📍 {item.store}</span>}
+                            </div>
+                          </div>
+                        </div>
+                        <button onClick={() => deleteShoppingItem(item.id)} className="text-gray-300 hover:text-red-400">
+                          <Icons.Trash2 size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* 已購買 */}
+                  {shoppingList.filter(item => item.bought).length > 0 && (
+                    <div className="pt-4">
+                      <h3 className="font-hand font-bold text-gray-400 mb-2">✓ 已購買</h3>
+                      {shoppingList.filter(item => item.bought).map(item => (
+                        <div 
+                          key={item.id} 
+                          onClick={() => toggleShoppingItem(item.id)}
+                          className="bg-gray-100 p-3 rounded-xl cursor-pointer transition-all mb-2 opacity-60"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center check-bounce">
+                              <Icons.Check size={14} className="text-white" />
+                            </div>
+                            <span className="font-hand text-gray-500 line-through">{item.item}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                {/* 匯出按鈕 */}
+                <div className="fixed bottom-28 left-1/2 transform -translate-x-1/2">
+                  <button onClick={() => setShowExportModal(true)} className="bg-[#207245] text-white px-6 py-3 rounded-full font-hand font-bold text-lg shadow-lg flex items-center gap-2">
+                    <Icons.Download size={20} /> 匯出 Excel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Nav */}
+          <div className="bg-white p-3 border-t-2 border-gray-100 flex justify-between items-end pb-8 z-20 shrink-0 safe-area-bottom">
+            <TabButton id="itinerary" IconComp={Icons.Map} label="行程" color="#4ECDC4" />
+            <TabButton id="expenses" IconComp={Icons.Coins} label="記帳" color="#FF9F43" />
+            <TabButton id="shopping" IconComp={Icons.ShoppingBag} label="購物" color="#FF6B81" />
+          </div>
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+  
+  <!-- Service Worker Registration for PWA -->
+  <script>
+    // Register Service Worker for offline capability
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        // Create a simple service worker inline
+        const swContent = `
+          const CACHE_NAME = 'crab-travel-v1';
+          const urlsToCache = ['/'];
+          
+          self.addEventListener('install', event => {
+            self.skipWaiting();
+          });
+          
+          self.addEventListener('fetch', event => {
+            event.respondWith(
+              fetch(event.request).catch(() => caches.match(event.request))
+            );
+          });
+        `;
+        
+        const blob = new Blob([swContent], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        
+        // For local file usage, we'll skip SW registration
+        // navigator.serviceWorker.register(swUrl);
+      });
+    }
+    
+    // PWA Install Prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+  </script>
+</body>
+</html>
